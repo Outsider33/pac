@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pac-1euro.com/sitemap.xml
