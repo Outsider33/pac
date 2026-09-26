@@ -1,5 +1,12 @@
+const AIDES_INDICATIVES = {
+  "Revenus très modestes": "jusqu'à environ 10 800 € (à confirmer)",
+  "Revenus modestes": "jusqu'à environ 8 000 € (à confirmer)",
+  "Revenus intermédiaires": "jusqu'à environ 5 000 € (à confirmer)",
+  "Revenus supérieurs": "aides CEE possibles, hors barème MaPrimeRénov'"
+};
+
 var CONFIG = {
-  GTM_ID: "GTM-XXXXXXX"
+  GTM_ID: "GTM-XXXXXXX" // À REMPLACER
 };
 
 (function () {
@@ -32,29 +39,49 @@ var CONFIG = {
     'analytics_storage': 'denied'
   });
 
-  function applyConsent(granted) {
+  var btnCust = $("#btnConsentCust"), btnSave = $("#btnConsentSave");
+  var chkAds = $("#chkAds"), chkAnalytics = $("#chkAnalytics"), consentOpts = $("#consentOptions");
+
+  function applyConsent(ads, analytics) {
     gtag('consent', 'update', {
-      'ad_storage': granted ? 'granted' : 'denied',
-      'ad_user_data': granted ? 'granted' : 'denied',
-      'ad_personalization': granted ? 'granted' : 'denied',
-      'analytics_storage': granted ? 'granted' : 'denied'
+      'ad_storage': ads ? 'granted' : 'denied',
+      'ad_user_data': ads ? 'granted' : 'denied',
+      'ad_personalization': ads ? 'granted' : 'denied',
+      'analytics_storage': analytics ? 'granted' : 'denied'
     });
-    localStorage.setItem("pac_consent", granted ? "1" : "0");
+    localStorage.setItem("pac_consent", JSON.stringify({ ad: ads, analytics: analytics }));
     if(consentBanner) consentBanner.style.transform = "translateY(100%)";
   }
 
-  var savedConsent = localStorage.getItem("pac_consent");
-  if (savedConsent !== null) {
-    applyConsent(savedConsent === "1");
+  var savedConsentStr = localStorage.getItem("pac_consent");
+  if (savedConsentStr) {
+    try {
+      var saved = JSON.parse(savedConsentStr);
+      applyConsent(!!saved.ad, !!saved.analytics);
+    } catch(e) {
+      applyConsent(savedConsentStr === "1", savedConsentStr === "1"); // Fallback migration
+    }
   } else if (consentBanner) {
     setTimeout(function() { consentBanner.style.transform = "translateY(0)"; }, 1000);
   }
 
-  if (btnAcc) btnAcc.addEventListener("click", function() { applyConsent(true); });
-  if (btnRef) btnRef.addEventListener("click", function() { applyConsent(false); });
+  if (btnAcc) btnAcc.addEventListener("click", function() { applyConsent(true, true); });
+  if (btnRef) btnRef.addEventListener("click", function() { applyConsent(false, false); });
+  if (btnCust) btnCust.addEventListener("click", function() {
+    if (consentOpts) consentOpts.style.display = "block";
+    btnAcc.style.display = "none";
+    btnRef.style.display = "none";
+    btnCust.style.display = "none";
+    if (btnSave) btnSave.style.display = "inline-block";
+  });
+  if (btnSave) btnSave.addEventListener("click", function() {
+    applyConsent(chkAds && chkAds.checked, chkAnalytics && chkAnalytics.checked);
+  });
+  
   if (linkManage) linkManage.addEventListener("click", function(e) {
     e.preventDefault();
     if(consentBanner) consentBanner.style.transform = "translateY(0)";
+    if(btnCust) btnCust.click(); // Rouvrir direct le panneau avancé
   });
 
   /* ---- header solid au scroll ---- */
@@ -101,9 +128,9 @@ var CONFIG = {
     var term = (urlParams.get("utm_term") || "").toLowerCase();
     var combined = camp + " " + term;
     if (combined.indexOf("fioul") !== -1) {
-      heroSub.textContent = "Remplacez votre chaudière fioul. Pour 1 €.";
+      heroSub.textContent = "Remplacez votre chaudière fioul. Aides cumulées jusqu'à 10 800 € selon profil.";
     } else if (combined.indexOf("gaz") !== -1) {
-      heroSub.textContent = "Remplacez votre chaudière gaz. Pour 1 €.";
+      heroSub.textContent = "Remplacez votre chaudière gaz. Aides cumulées jusqu'à 10 800 € selon profil.";
     } else if (combined.indexOf("aide") !== -1 || combined.indexOf("prime") !== -1) {
       heroSub.textContent = "Vérifiez les aides et votre reste à charge.";
     }
@@ -156,7 +183,22 @@ var CONFIG = {
         var dptMatch = $("#ban").value.match(/\b\d{2}/);
         var dep = dptMatch ? dptMatch[0] : "";
         $("#rwdDep").textContent = dep;
-        $("#rwdChauf").textContent = answers.chauffage.toLowerCase();
+        
+        var chaufItem = $("#rwdChauf").parentNode;
+        if (answers.chauffage === "Électrique") {
+            chaufItem.innerHTML = "☀️ <b>Votre logement</b> : compatible avec un Système Solaire Combiné";
+        } else {
+            chaufItem.innerHTML = "🔥 <b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
+        }
+        
+        var aideItem = document.getElementById("rwdAide");
+        if (!aideItem) {
+            aideItem = document.createElement("li");
+            aideItem.id = "rwdAide";
+            chaufItem.parentNode.appendChild(aideItem);
+        }
+        var aideVal = AIDES_INDICATIVES[answers.revenus] || "aides CEE possibles";
+        aideItem.innerHTML = "💶 <b>Aide estimée</b> : " + aideVal;
       }
 
       var first = $("#qForm input[name=nom_prenom]");
@@ -275,10 +317,16 @@ var CONFIG = {
 
   // Validation Surface (30-500)
   var fSurf = $("#fSurface");
+  var surfErr = $("#surfErr");
   if(fSurf) fSurf.addEventListener("input", function() {
     var v = parseInt(this.value, 10);
-    if(v < 30 || v > 500) this.setCustomValidity("La surface doit être comprise entre 30 et 500 m².");
-    else this.setCustomValidity("");
+    if (v < 20 || v > 400) {
+      this.setCustomValidity("La surface doit être comprise entre 20 et 400 m².");
+      if (surfErr) surfErr.textContent = "La surface doit être comprise entre 20 et 400 m².";
+    } else {
+      this.setCustomValidity("");
+      if (surfErr) surfErr.textContent = "";
+    }
   });
 
   /* ---- masque téléphone +33 ---- */
