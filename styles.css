@@ -370,3 +370,6 @@ legend.q{padding:0;outline:0}
 @media (max-width:480px){
   .hdr .btn-primary{display:none}
 }
+
+/* Added for Form Accessibility */
+#formulaire { scroll-margin-bottom: 80px; }

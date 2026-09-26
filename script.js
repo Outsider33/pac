@@ -1,15 +1,61 @@
-/* =========================================================================
-   PAC à 1 € — script.js
-   Reveals (v7), header scroll, sticky CTA mobile, quick-start hero,
-   form 3 étapes (focus + ARIA), BAN autocomplete, masque tél, UTM/gclid.
-   ========================================================================= */
+var CONFIG = {
+  GTM_ID: "GTM-XXXXXXX"
+};
+
 (function () {
   "use strict";
-  var $ = function (s, c) { return (c || document).querySelector(s); };
-  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
-  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
+    /* ---- GTM INJECTION ---- */
+  if (CONFIG.GTM_ID && CONFIG.GTM_ID !== 'GTM-XXXXXXX') {
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',CONFIG.GTM_ID);
+  }
+
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return [].slice.call((c || document).querySelectorAll(s)); };
+
+  /* ---- consentement ---- */
+  var consentBanner = $("#consentBanner");
+  var btnAcc = $("#btnConsentAcc"), btnRef = $("#btnConsentRef"), linkManage = $("#linkManageCookies");
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+
+  // Consent Mode v2 par défaut
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied'
+  });
+
+  function applyConsent(granted) {
+    gtag('consent', 'update', {
+      'ad_storage': granted ? 'granted' : 'denied',
+      'ad_user_data': granted ? 'granted' : 'denied',
+      'ad_personalization': granted ? 'granted' : 'denied',
+      'analytics_storage': granted ? 'granted' : 'denied'
+    });
+    localStorage.setItem("pac_consent", granted ? "1" : "0");
+    if(consentBanner) consentBanner.style.transform = "translateY(100%)";
+  }
+
+  var savedConsent = localStorage.getItem("pac_consent");
+  if (savedConsent !== null) {
+    applyConsent(savedConsent === "1");
+  } else if (consentBanner) {
+    setTimeout(function() { consentBanner.style.transform = "translateY(0)"; }, 1000);
+  }
+
+  if (btnAcc) btnAcc.addEventListener("click", function() { applyConsent(true); });
+  if (btnRef) btnRef.addEventListener("click", function() { applyConsent(false); });
+  if (linkManage) linkManage.addEventListener("click", function(e) {
+    e.preventDefault();
+    if(consentBanner) consentBanner.style.transform = "translateY(0)";
+  });
 
   /* ---- header solid au scroll ---- */
   var hdr = $(".hdr");
@@ -17,19 +63,19 @@
   addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
   /* ---- reveals / stagger / mech ---- */
-  var targets = $$(".reveal, .reveal-stamp, .stagger, .mech");
-  if ("IntersectionObserver" in window && !reduce) {
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-    targets.forEach(function (el) {
-      var r = el.getBoundingClientRect();
-      if (r.top < innerHeight * 0.92) { requestAnimationFrame(function () { el.classList.add("in"); }); }
-      else io.observe(el);
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var ob = "IntersectionObserver" in window ? new IntersectionObserver(function (es, obs) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) {
+        var el = e.target; el.classList.add("in"); obs.unobserve(el);
+        if (el.classList.contains("stagger")) $$("li, .card, .step, .gar-card", el).forEach(function (c, i) { setTimeout(function () { c.classList.add("in"); }, i * (reduce ? 0 : 100)); });
+      }
     });
-  } else { targets.forEach(function (el) { el.classList.add("in"); }); }
+  }, { threshold: 0.1 }) : null;
+  if (ob) $$(".reveal, .stagger").forEach(function (el) { ob.observe(el); });
+  else $$(".reveal, .stagger, .step, .card, .gar-card, li").forEach(function (el) { el.classList.add("in"); });
 
-  /* ---- sticky CTA mobile : visible hors hero et hors formulaire ---- */
+  /* ---- sticky CTA mobile ---- */
   var sticky = $("#stickyCta"), hero = $(".hero"), formSec = $("#formulaire");
   if (sticky && hero && formSec && "IntersectionObserver" in window) {
     var heroOut = false, formIn = false;
@@ -38,108 +84,137 @@
     new IntersectionObserver(function (es) { formIn = es[0].isIntersecting; syncSticky(); }, { threshold: 0.1 }).observe(formSec);
   }
 
-  /* =========================================================================
-     FORMULAIRE — 3 étapes
-     ========================================================================= */
+  /* ---- Message Match / UTM Fields ---- */
+  var urlParams = new URLSearchParams(window.location.search);
+  var hiddenFields = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"];
+  hiddenFields.forEach(function(key) {
+    var val = urlParams.get(key);
+    var el = document.getElementById(key);
+    if (el && val && !el.value) el.value = val;
+  });
+  var pUrl = document.getElementById("page_url"); if (pUrl && !pUrl.value) pUrl.value = window.location.href.split('?')[0];
+  var pRef = document.getElementById("referrer"); if (pRef && !pRef.value && document.referrer) pRef.value = document.referrer;
+
+  var heroSub = $(".hero h1");
+  if (heroSub) {
+    var camp = (urlParams.get("utm_campaign") || "").toLowerCase();
+    var term = (urlParams.get("utm_term") || "").toLowerCase();
+    var combined = camp + " " + term;
+    if (combined.indexOf("fioul") !== -1) {
+      heroSub.textContent = "Remplacez votre chaudière fioul. Pour 1 €.";
+    } else if (combined.indexOf("gaz") !== -1) {
+      heroSub.textContent = "Remplacez votre chaudière gaz. Pour 1 €.";
+    } else if (combined.indexOf("aide") !== -1 || combined.indexOf("prime") !== -1) {
+      heroSub.textContent = "Vérifiez les aides et votre reste à charge.";
+    }
+  }
+
+  /* ---- FORMULAIRE ---- */
   var form = $("#qual"); if (!form) return;
   var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qStep5", "qStep6", "qForm"];
   var cur = 0;
-  var elNow = $("#qNow"), bar = $("#qBar"), barSpan = $("#qBar span"), status = $("#qStatus"), summary = $("#qSummary");
+  var elNow = $("#qNow"), bar = $("#qBar"), barSpan = $("#qBar span"), status = $("#qStatus");
   var answers = {};
+  var formStarted = false;
 
-  /* ---- attribution : UTM / gclid / referrer dans les champs cachés ---- */
-  try {
-    var params = new URLSearchParams(location.search);
-    ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"].forEach(function (k) {
-      var input = form.querySelector('input[name="' + k + '"]');
-      if (input && params.get(k)) input.value = params.get(k);
-    });
-    var pu = form.querySelector('input[name="page_url"]'); if (pu) pu.value = location.href.split("#")[0];
-    var rf = form.querySelector('input[name="referrer"]'); if (rf) rf.value = document.referrer || "";
-  } catch (e) {}
+  function setStatus(msg, err) {
+    if (!status) return;
+    status.textContent = msg;
+    status.style.color = err ? "var(--c-err)" : "inherit";
+    status.classList.toggle("err", !!err);
+  }
 
-  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function pad(n) { return n < 10 ? "0" + n : n; }
+
   function show(i, moveFocus) {
+    if(!formStarted) {
+      formStarted = true;
+      dataLayer.push({ event: "form_start" });
+    }
+    dataLayer.push({ event: "form_step_" + (i + 1) });
+
     cur = i;
-    steps.forEach(function (id, idx) { $("#" + id).hidden = idx !== i; });
-    $("#qSuccess").hidden = true;
+    steps.forEach(function (id, idx) {
+      var el = $("#" + id);
+      if (el) el.hidden = (idx !== i);
+    });
     if (elNow) elNow.textContent = pad(i + 1);
     if (barSpan) barSpan.style.width = ((i + 1) / 7) * 100 + "%";
     if (bar) { bar.classList.toggle("full", i === 6); bar.setAttribute("aria-valuenow", i + 1); }
     setStatus("");
+    
+    // Reward screen updates dynamically if step 7
     if (i === 6) {
-      summary.innerHTML =
-        '<span><b>Statut&nbsp;:</b> ' + (answers.statut || "—") + ' <a href="#" data-goto="0">Modifier</a></span>' +
-        '<span><b>Chauffage&nbsp;:</b> ' + (answers.chauffage || "—") + ' <a href="#" data-goto="1">Modifier</a></span>' +
-        '<span><b>Logement&nbsp;:</b> ' + (answers.logement || "—") + ' <a href="#" data-goto="2">Modifier</a></span>' +
-        '<span><b>Revenus&nbsp;:</b> ' + (answers.revenus || "—") + ' <a href="#" data-goto="5">Modifier</a></span>';
+      // Check if critical steps are missing (guardrail)
+      if (!answers.statut || !answers.chauffage || !answers.logement || !answers.revenus || !$("#ban").value || !$("#fSurface").value) {
+        $("#qReward").hidden = true;
+        $("#qRewardFail").hidden = false;
+      } else {
+        $("#qReward").hidden = false;
+        $("#qRewardFail").hidden = true;
+        
+        var dptMatch = $("#ban").value.match(/\b\d{2}/);
+        var dep = dptMatch ? dptMatch[0] : "";
+        $("#rwdDep").textContent = dep;
+        $("#rwdChauf").textContent = answers.chauffage.toLowerCase();
+      }
+
       var first = $("#qForm input[name=nom_prenom]");
       if (first && moveFocus !== false) setTimeout(function () { try { first.focus({ preventScroll: true }); } catch (e) {} }, 360);
     } else if (moveFocus) {
-      var legend = $("#" + steps[i] + " legend");
+      var s = $("#" + steps[i]);
+      var legend = s ? s.querySelector("legend") : null;
       if (legend) setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, 360);
     }
   }
-  function setStatus(m, err) { if (!status) return; status.textContent = m; status.className = "qual-status mono" + (err ? " err" : ""); }
 
-  /* ---- quick-start depuis le hero : pré-sélectionne le statut ---- */
-  $$("[data-qs]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var v = b.getAttribute("data-qs");
-      var radio = form.querySelector('input[name="statut"][value="' + v + '"]');
-      if (radio) { radio.checked = true; answers.statut = v; }
-      if (v === "Locataire occupant") {
-         steps.forEach(function (id) { document.getElementById(id).hidden = true; });
-         var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
-         var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
-      } else {
-         show(1, false);
-      }
-      formSec.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
-      var legend = $("#qStep2 legend");
-      if (legend && v !== "Locataire occupant") setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 600);
-    });
-  });
+  function showHorsCible(msg) {
+    steps.forEach(function (id) { var el = document.getElementById(id); if(el) el.hidden = true; });
+    var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+    var out = document.getElementById("qHorsCible"); 
+    if(out) { 
+      var m = document.getElementById("hcMsg");
+      if(m && msg) m.textContent = msg;
+      out.hidden = false; 
+      try { out.focus({ preventScroll: true }); } catch (e) {} 
+    }
+    dataLayer.push({ event: "lead_hors_cible", reason: answers.logement || answers.statut || answers.chauffage });
+  }
 
-  // auto-advance radios
-  $$("input[type=radio]", form).forEach(function (r) {
-    r.addEventListener("change", function () {
-      answers[r.name] = r.value;
-      if (r.name === "statut") setTimeout(function () { 
-          if (answers.statut === "Locataire occupant") {
-            steps.forEach(function (id) { document.getElementById(id).hidden = true; });
-            var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
-            var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
-          } else {
-            show(1, true); 
-          }
-        }, 240);
-      if (r.name === "chauffage") setTimeout(function () {
-          if (answers.chauffage === "Électrique" || answers.chauffage === "Autre") {
-            steps.forEach(function (id) { document.getElementById(id).hidden = true; });
-            var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
-            var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
-          } else {
-            show(2, true);
-          }
-        }, 240);
-        if (r.name === "logement") setTimeout(function () {
-          if (answers.logement === "Appartement") {
-            steps.forEach(function (id) { document.getElementById(id).hidden = true; });
-            var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
-            var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
-          } else {
-            show(3, true);
-          }
-        }, 240);
-        if (r.name === "revenus") setTimeout(function () { show(6, true); }, 240);
+  function showSsc() {
+    steps.forEach(function (id) { var el = document.getElementById(id); if(el) el.hidden = true; });
+    var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+    var ssc = document.getElementById("qSsc");
+    if(ssc) { ssc.hidden = false; try { ssc.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  var btnContinueSsc = document.getElementById("btnContinueSsc");
+  if(btnContinueSsc) {
+    btnContinueSsc.addEventListener("click", function() {
+      var ssc = document.getElementById("qSsc"); if(ssc) ssc.hidden = true;
+      var top = document.querySelector(".qual-top"); if(top) top.hidden = false;
+      show(2, true);
     });
-  });
-  // back + modify
+  }
+
+  // clicks
   form.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-back]"); if (b) { show(Math.max(0, cur - 1), true); return; }
-    var g = e.target.closest("[data-goto]"); if (g) { e.preventDefault(); show(+g.getAttribute("data-goto"), true); }
-    var n = e.target.closest("[data-next]"); if (n) {
+    var b = e.target.closest("[data-back]"); 
+    if (b) { 
+      // Si on est sur l'écran SSC et qu'on fait retour
+      var ssc = b.closest("#qSsc");
+      if (ssc) {
+        ssc.hidden = true;
+        var top = document.querySelector(".qual-top"); if(top) top.hidden = false;
+        show(1, true); // retour étape chauffage
+        return;
+      }
+      show(Math.max(0, cur - 1), true); 
+      return; 
+    }
+    
+    var n = e.target.closest("[data-next]"); 
+    if (n) {
       var step = n.closest(".qstep");
       var fields = step.querySelectorAll("input[required], select[required]");
       for (var i = 0; i < fields.length; i++) {
@@ -154,6 +229,58 @@
     }
   });
 
+  // Radios
+  $$("input[type=radio]", form).forEach(function (r) {
+    r.addEventListener("change", function () {
+      answers[r.name] = r.value;
+      
+      if (r.name === "statut") {
+        if (answers.statut === "Locataire occupant") {
+          document.getElementById("locataireAccord").hidden = false;
+        } else {
+          document.getElementById("locataireAccord").hidden = true;
+          setTimeout(function () { show(1, true); }, 240);
+        }
+      }
+      
+      if (r.name === "accord_proprio") {
+        if (answers.accord_proprio === "Non") {
+          setTimeout(function() { showHorsCible("Il est indispensable d'avoir l'accord de votre propriétaire pour procéder à l'installation d'une pompe à chaleur."); }, 240);
+        } else {
+          setTimeout(function() { show(1, true); }, 240);
+        }
+      }
+
+      if (r.name === "chauffage") {
+        if (answers.chauffage === "Autre") {
+          setTimeout(function() { showHorsCible("Malheureusement, au vu de vos réponses, vous ne remplissez pas les conditions d'éligibilité pour cette aide."); }, 240);
+        } else if (answers.chauffage === "Électrique") {
+          setTimeout(showSsc, 240);
+        } else {
+          setTimeout(function () { show(2, true); }, 240);
+        }
+      }
+
+      if (r.name === "logement") {
+        if (answers.logement === "Appartement") {
+          setTimeout(function() { showHorsCible("La pompe à chaleur air/eau nécessite l'installation d'une unité extérieure encombrante et est très rarement compatible ou autorisée en appartement."); }, 240);
+        } else {
+          setTimeout(function () { show(3, true); }, 240);
+        }
+      }
+
+      if (r.name === "revenus") setTimeout(function () { show(6, true); }, 240);
+    });
+  });
+
+  // Validation Surface (30-500)
+  var fSurf = $("#fSurface");
+  if(fSurf) fSurf.addEventListener("input", function() {
+    var v = parseInt(this.value, 10);
+    if(v < 30 || v > 500) this.setCustomValidity("La surface doit être comprise entre 30 et 500 m².");
+    else this.setCustomValidity("");
+  });
+
   /* ---- masque téléphone +33 ---- */
   var tel = $("#tel");
   if (tel) tel.addEventListener("input", function () {
@@ -161,7 +288,7 @@
     tel.value = (d.match(/.{1,2}/g) || []).join(" ").replace(/^(\d)\s/, "$1 ");
   });
 
-  /* ---- BAN autocomplete (api-adresse.data.gouv.fr) ---- */
+  /* ---- BAN autocomplete ---- */
   var ban = $("#ban"), banList = $("#banList"), banTimer, banIdx = -1, banItems = [];
   function closeBan() {
     if (!banList) return;
@@ -208,9 +335,13 @@
   }
 
   /* ---- submit ---- */
+  var isSubmitting = false;
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    if (form.action.indexOf("__FORMSPREE_ID__") !== -1) { setStatus("⚙ Configurez Formspree (remplacez __FORMSPREE_ID__).", true); return; }
+    if (isSubmitting) return;
+
+    if (form.action.indexOf("__FORMSPREE_ID__") !== -1) { setStatus("⚠️ Configurez Formspree (remplacez __FORMSPREE_ID__).", true); return; }
+    
     var fields = $$("#qForm input[required], #qForm select[required]");
     for (var i = 0; i < fields.length; i++) {
       if (!fields[i].checkValidity()) {
@@ -221,9 +352,19 @@
       }
     }
     if (tel && !/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
+    
     var btn = $(".qsubmit", form); var orig = btn ? btn.textContent : "";
     if (btn) { btn.disabled = true; btn.textContent = "Envoi…"; }
-    var fd = new FormData(form); fd.set("telephone", "+33 " + tel.value);
+    isSubmitting = true;
+
+    // Normalisation téléphone en format E.164
+    var rawTel = tel.value.replace(/\D/g, "");
+    if(rawTel.startsWith("0")) rawTel = rawTel.slice(1);
+    var telE164 = "+33" + rawTel;
+
+    var fd = new FormData(form); 
+    fd.set("telephone", telE164);
+
     fetch(form.action, { method: "POST", body: fd, headers: { Accept: "application/json" } })
       .then(function (r) {
         if (r.ok) {
@@ -231,14 +372,49 @@
           $(".qual-top", form).hidden = true;
           var ok = $("#qSuccess"); ok.hidden = false;
           try { ok.focus({ preventScroll: true }); } catch (e2) {}
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({ event: "generate_lead", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
+          
+          dataLayer.push({ event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
         }
-        else { setStatus("⚠ Une erreur est survenue. Réessayez ou appelez-nous.", true); }
+        else { setStatus("⚠️ Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })
-      .catch(function () { setStatus("⚠ Connexion impossible. Appelez-nous directement.", true); })
-      .finally(function () { if (btn) { btn.disabled = false; btn.textContent = orig; } });
+      .catch(function () { setStatus("⚠️ Connexion impossible. Appelez-nous directement.", true); })
+      .finally(function () { 
+        isSubmitting = false; 
+        if (btn) { btn.disabled = false; btn.textContent = orig; } 
+      });
   });
+
+  /* ---- Générateur ICS ---- */
+  var btnIcs = $("#btnIcs");
+  if(btnIcs) {
+    btnIcs.addEventListener("click", function(e) {
+      // 9h prochain jour ouvré
+      var d = new Date();
+      d.setDate(d.getDate() + 1);
+      // Sauter samedi/dimanche
+      if (d.getDay() === 6) d.setDate(d.getDate() + 2); // Si samedi -> Lundi
+      else if (d.getDay() === 0) d.setDate(d.getDate() + 1); // Si dimanche -> Lundi
+      
+      d.setHours(9, 0, 0, 0); // 9h00 locale
+      var end = new Date(d.getTime() + 30*60000); // +30 min
+      
+      // format YYYYMMDDTHHMMSSZ (en UTC)
+      function fmt(dt) { return dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z"; }
+      
+      var ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//PAC 1 EURO//NONSGML v1.0//EN\nBEGIN:VEVENT\n";
+      ics += "UID:" + Date.now() + "@pac-1euro.com\n";
+      ics += "DTSTAMP:" + fmt(new Date()) + "\n";
+      ics += "DTSTART:" + fmt(d) + "\n";
+      ics += "DTEND:" + fmt(end) + "\n";
+      ics += "SUMMARY:Appel d'estimation PAC à 1 €\n";
+      ics += "DESCRIPTION:Un conseiller vous rappelle depuis le 07 80 94 82 05 pour votre estimation.\n";
+      ics += "END:VEVENT\nEND:VCALENDAR";
+
+      var blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      btnIcs.href = url;
+    });
+  }
 
   show(0, false);
 })();
