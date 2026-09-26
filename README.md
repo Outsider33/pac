@@ -6,7 +6,7 @@ sans build, déployable sur **Cloudflare Pages**.
 
 Design calé sur l'ADN documenté de Samuel + le site La Primeur : crème + noir + **accent terracotta**,
 **un mot italique par titre**, **labels mono numérotés**, **shimmer dividers**, **zéro emoji**.
-Produits nommés par **code de fiche CEE officiel** (BAR-TH-171 air/eau, BAR-TH-143 SSC).
+Produits nommés par **code de fiche CEE officiel** (BAR-TH-171 air/eau, BAR-TH-168 SSC).
 Brand-sheet : `design/references/pac_brand.md`.
 
 ## Standards appliqués (refonte 2026-06-10)

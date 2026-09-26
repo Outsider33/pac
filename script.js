@@ -42,7 +42,7 @@
      FORMULAIRE — 3 étapes
      ========================================================================= */
   var form = $("#qual"); if (!form) return;
-  var steps = ["qStep1", "qStep2", "qForm"];
+  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qForm"];
   var cur = 0;
   var elNow = $("#qNow"), bar = $("#qBar"), barSpan = $("#qBar span"), status = $("#qStatus"), summary = $("#qSummary");
   var answers = {};
@@ -64,10 +64,10 @@
     steps.forEach(function (id, idx) { $("#" + id).hidden = idx !== i; });
     $("#qSuccess").hidden = true;
     if (elNow) elNow.textContent = pad(i + 1);
-    if (barSpan) barSpan.style.width = ((i + 1) / 3) * 100 + "%";
-    if (bar) { bar.classList.toggle("full", i === 2); bar.setAttribute("aria-valuenow", i + 1); }
+    if (barSpan) barSpan.style.width = ((i + 1) / 5) * 100 + "%";
+    if (bar) { bar.classList.toggle("full", i === 4); bar.setAttribute("aria-valuenow", i + 1); }
     setStatus("");
-    if (i === 2) {
+    if (i === 4) {
       summary.innerHTML =
         '<span><b>Statut&nbsp;:</b> ' + (answers.statut || "—") + ' <a href="#" data-goto="0">Modifier</a></span>' +
         '<span><b>Chauffage&nbsp;:</b> ' + (answers.chauffage || "—") + ' <a href="#" data-goto="1">Modifier</a></span>';
@@ -86,10 +86,16 @@
       var v = b.getAttribute("data-qs");
       var radio = form.querySelector('input[name="statut"][value="' + v + '"]');
       if (radio) { radio.checked = true; answers.statut = v; }
-      show(1, false);
+      if (v === "Locataire occupant") {
+         steps.forEach(function (id) { document.getElementById(id).hidden = true; });
+         var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+         var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
+      } else {
+         show(1, false);
+      }
       formSec.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
       var legend = $("#qStep2 legend");
-      if (legend) setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 600);
+      if (legend && v !== "Locataire occupant") setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 600);
     });
   });
 
@@ -97,8 +103,34 @@
   $$("input[type=radio]", form).forEach(function (r) {
     r.addEventListener("change", function () {
       answers[r.name] = r.value;
-      if (r.name === "statut") setTimeout(function () { show(1, true); }, 240);
-      if (r.name === "chauffage") setTimeout(function () { show(2, true); }, 240);
+      if (r.name === "statut") setTimeout(function () { 
+          if (answers.statut === "Locataire occupant") {
+            steps.forEach(function (id) { document.getElementById(id).hidden = true; });
+            var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+            var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
+          } else {
+            show(1, true); 
+          }
+        }, 240);
+      if (r.name === "chauffage") setTimeout(function () {
+          if (answers.chauffage === "Électrique" || answers.chauffage === "Autre") {
+            steps.forEach(function (id) { document.getElementById(id).hidden = true; });
+            var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+            var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
+          } else {
+            show(2, true);
+          }
+        }, 240);
+        if (r.name === "logement") setTimeout(function () {
+          if (answers.logement === "Appartement") {
+            steps.forEach(function (id) { document.getElementById(id).hidden = true; });
+            var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+            var out = document.getElementById("qHorsCible"); if(out) { out.hidden = false; try { out.focus({ preventScroll: true }); } catch (e) {} }
+          } else {
+            show(3, true);
+          }
+        }, 240);
+        if (r.name === "revenus") setTimeout(function () { show(4, true); }, 240);
     });
   });
   // back + modify
