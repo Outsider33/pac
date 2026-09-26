@@ -232,8 +232,8 @@
 
     <form class="qual reveal d2" id="qual" action="https://formspree.io/f/xgobgwpk" method="POST" novalidate aria-label="Test d'éligibilité">
       <div class="qual-top">
-        <span class="qual-count mono" aria-live="polite"><b id="qNow">01</b> / 05</span>
-        <div class="qual-bar" id="qBar" role="progressbar" aria-label="Progression du test" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"><span></span></div>
+        <span class="qual-count mono" aria-live="polite"><b id="qNow">01</b> / 07</span>
+        <div class="qual-bar" id="qBar" role="progressbar" aria-label="Progression du test" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1"><span></span></div>
       </div>
 
       <!-- step 1 : statut -->
@@ -267,8 +267,22 @@
           <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button></div>
         </fieldset>
 
-        <!-- step 4 : revenus -->
+                <!-- step 4 : surface -->
         <fieldset class="qstep" id="qStep4" data-step="4" hidden>
+          <legend class="q" tabindex="-1">Surface habitable de votre logement ?</legend>
+          <div class="field"><label for="fSurface">Surface (m²) *</label><input type="number" id="fSurface" name="surface" min="10" max="2000" inputmode="numeric" required></div>
+          <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="button" class="btn btn-primary" data-next>Suivant</button></div>
+        </fieldset>
+
+        <!-- step 5 : code postal -->
+        <fieldset class="qstep" id="qStep5" data-step="5" hidden>
+          <legend class="q" tabindex="-1">Quel est votre code postal ?</legend>
+          <div class="field ban"><label for="ban">Code postal / commune *</label><input type="text" id="ban" name="adresse" autocomplete="off" placeholder="ex. 33000 Bordeaux" role="combobox" aria-expanded="false" aria-controls="banList" aria-autocomplete="list" required><div class="ban-list" id="banList" role="listbox" aria-label="Suggestions d'adresses" hidden></div></div>
+          <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="button" class="btn btn-primary" data-next>Suivant</button></div>
+        </fieldset>
+
+        <!-- step 6 : revenus -->
+        <fieldset class="qstep" id="qStep6" data-step="6" hidden>
           <legend class="q" tabindex="-1">Revenus de votre foyer ?</legend>
           <div class="opts">
             <label class="opt"><input type="radio" name="revenus" value="Revenus très modestes" required><span class="ot">Revenus très modestes</span></label>
@@ -279,27 +293,23 @@
           <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button></div>
         </fieldset>
 
-        <!-- step 5 : coordonnées -->
-      <fieldset class="qstep" id="qForm" data-step="5" hidden>
-        <legend class="q" tabindex="-1">Où vous rappeler ?</legend>
-        <div class="qsummary" id="qSummary"></div>
-        <div class="field"><label for="fNom">Nom et prénom *</label><input type="text" id="fNom" name="nom_prenom" autocomplete="name" required></div>
-        <div class="grid2">
-          <div class="field"><label for="tel">Téléphone *</label><div class="tel-wrap"><span class="pfx">+33</span><input type="tel" id="tel" name="telephone" inputmode="tel" autocomplete="tel-national" maxlength="14" required></div></div>
-          <div class="field"><label for="fEmail">Email <span class="opt-hint">(facultatif)</span></label><input type="email" id="fEmail" name="email" autocomplete="email"></div>
-        </div>
-        <div class="field ban"><label for="ban">Code postal / commune *</label><input type="text" id="ban" name="adresse" autocomplete="off" placeholder="ex. 33000 Bordeaux" role="combobox" aria-expanded="false" aria-controls="banList" aria-autocomplete="list" required><div class="ban-list" id="banList" role="listbox" aria-label="Suggestions d'adresses" hidden></div></div>
-        <div class="grid2">
-          <div class="field"><label for="fSurface">Surface du logement (m²) *</label><input type="number" id="fSurface" name="surface" min="10" max="2000" inputmode="numeric" required></div>
+        <!-- step 7 : coordonnées -->
+        <fieldset class="qstep" id="qForm" data-step="7" hidden>
+          <legend class="q" tabindex="-1">Où vous rappeler ?</legend>
+          <div class="qsummary" id="qSummary"></div>
+          <div class="field"><label for="fNom">Nom et prénom *</label><input type="text" id="fNom" name="nom_prenom" autocomplete="name" required></div>
+          <div class="grid2">
+            <div class="field"><label for="tel">Téléphone *</label><div class="tel-wrap"><span class="pfx">+33</span><input type="tel" id="tel" name="telephone" inputmode="tel" autocomplete="tel-national" maxlength="14" required></div></div>
+            <div class="field"><label for="fEmail">Email <span class="opt-hint">(facultatif)</span></label><input type="email" id="fEmail" name="email" autocomplete="email"></div>
+          </div>
           <div class="field"><label for="fCreneau">Heure de rappel</label><select id="fCreneau" name="creneau"><option>Pas de préférence</option><option>8 h - 12 h</option><option>12 h - 14 h</option><option>14 h - 18 h</option><option>18 h - 20 h</option></select></div>
-        </div>
-        <label class="consent"><input type="checkbox" name="consentement" value="oui" required> J'accepte d'être recontacté au sujet de mon projet. Un seul appel, aucun démarchage répété.</label>
-        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-        <input type="hidden" name="_subject" value="Nouveau lead — PAC à 1 €">
-        <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="utm_term"><input type="hidden" name="utm_content"><input type="hidden" name="gclid"><input type="hidden" name="page_url"><input type="hidden" name="referrer">
-        <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="submit" class="btn btn-primary qsubmit">Voir mon éligibilité</button></div>
-        <p class="qual-status mono" id="qStatus" role="status" aria-live="polite"></p>
-      </fieldset>
+          <label class="consent"><input type="checkbox" name="consentement" value="oui" required> J'accepte d'être recontacté au sujet de mon projet. Un seul appel, aucun démarchage répété.</label>
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+          <input type="hidden" name="_subject" value="Nouveau lead — PAC à 1 €">
+          <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="utm_term"><input type="hidden" name="utm_content"><input type="hidden" name="gclid"><input type="hidden" name="page_url"><input type="hidden" name="referrer">
+          <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="submit" class="btn btn-primary qsubmit">Voir mon éligibilité</button></div>
+          <p class="qual-status mono" id="qStatus" role="status" aria-live="polite"></p>
+        </fieldset>
 
       <!-- success -->
       <div class="qsuccess" id="qSuccess" hidden tabindex="-1">

@@ -42,7 +42,7 @@
      FORMULAIRE — 3 étapes
      ========================================================================= */
   var form = $("#qual"); if (!form) return;
-  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qForm"];
+  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qStep5", "qStep6", "qForm"];
   var cur = 0;
   var elNow = $("#qNow"), bar = $("#qBar"), barSpan = $("#qBar span"), status = $("#qStatus"), summary = $("#qSummary");
   var answers = {};
@@ -64,13 +64,15 @@
     steps.forEach(function (id, idx) { $("#" + id).hidden = idx !== i; });
     $("#qSuccess").hidden = true;
     if (elNow) elNow.textContent = pad(i + 1);
-    if (barSpan) barSpan.style.width = ((i + 1) / 5) * 100 + "%";
-    if (bar) { bar.classList.toggle("full", i === 4); bar.setAttribute("aria-valuenow", i + 1); }
+    if (barSpan) barSpan.style.width = ((i + 1) / 7) * 100 + "%";
+    if (bar) { bar.classList.toggle("full", i === 6); bar.setAttribute("aria-valuenow", i + 1); }
     setStatus("");
-    if (i === 4) {
+    if (i === 6) {
       summary.innerHTML =
         '<span><b>Statut&nbsp;:</b> ' + (answers.statut || "—") + ' <a href="#" data-goto="0">Modifier</a></span>' +
-        '<span><b>Chauffage&nbsp;:</b> ' + (answers.chauffage || "—") + ' <a href="#" data-goto="1">Modifier</a></span>';
+        '<span><b>Chauffage&nbsp;:</b> ' + (answers.chauffage || "—") + ' <a href="#" data-goto="1">Modifier</a></span>' +
+        '<span><b>Logement&nbsp;:</b> ' + (answers.logement || "—") + ' <a href="#" data-goto="2">Modifier</a></span>' +
+        '<span><b>Revenus&nbsp;:</b> ' + (answers.revenus || "—") + ' <a href="#" data-goto="5">Modifier</a></span>';
       var first = $("#qForm input[name=nom_prenom]");
       if (first && moveFocus !== false) setTimeout(function () { try { first.focus({ preventScroll: true }); } catch (e) {} }, 360);
     } else if (moveFocus) {
@@ -130,13 +132,26 @@
             show(3, true);
           }
         }, 240);
-        if (r.name === "revenus") setTimeout(function () { show(4, true); }, 240);
+        if (r.name === "revenus") setTimeout(function () { show(6, true); }, 240);
     });
   });
   // back + modify
   form.addEventListener("click", function (e) {
     var b = e.target.closest("[data-back]"); if (b) { show(Math.max(0, cur - 1), true); return; }
     var g = e.target.closest("[data-goto]"); if (g) { e.preventDefault(); show(+g.getAttribute("data-goto"), true); }
+    var n = e.target.closest("[data-next]"); if (n) {
+      var step = n.closest(".qstep");
+      var fields = step.querySelectorAll("input[required], select[required]");
+      for (var i = 0; i < fields.length; i++) {
+        if (!fields[i].checkValidity()) {
+          fields[i].reportValidity();
+          var box = fields[i].closest(".field, label");
+          if (box) { box.classList.add("shake"); setTimeout(function(bx){return function(){bx.classList.remove("shake")}}(box), 400); }
+          return;
+        }
+      }
+      show(Math.min(steps.length - 1, cur + 1), true);
+    }
   });
 
   /* ---- masque téléphone +33 ---- */
@@ -217,7 +232,7 @@
           var ok = $("#qSuccess"); ok.hidden = false;
           try { ok.focus({ preventScroll: true }); } catch (e2) {}
           window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({ event: "generate_lead", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "" });
+          window.dataLayer.push({ event: "generate_lead", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
         }
         else { setStatus("⚠ Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })
