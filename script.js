@@ -138,7 +138,7 @@ var CONFIG = {
 
   /* ---- FORMULAIRE ---- */
   var form = $("#qual"); if (!form) return;
-  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qStep5", "qStep6", "qForm"];
+  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qStep5", "qStep6", "qStep7", "qForm"];
   var cur = 0;
   var elNow = $("#qNow"), bar = $("#qBar"), barSpan = $("#qBar span"), status = $("#qStatus");
   var answers = {};
@@ -166,12 +166,12 @@ var CONFIG = {
       if (el) el.hidden = (idx !== i);
     });
     if (elNow) elNow.textContent = pad(i + 1);
-    if (barSpan) barSpan.style.width = ((i + 1) / 7) * 100 + "%";
-    if (bar) { bar.classList.toggle("full", i === 6); bar.setAttribute("aria-valuenow", i + 1); }
+    if (barSpan) barSpan.style.width = ((i + 1) / 8) * 100 + "%";
+    if (bar) { bar.classList.toggle("full", i === 7); bar.setAttribute("aria-valuenow", i + 1); }
     setStatus("");
     
     // Reward screen updates dynamically if step 7
-    if (i === 6) {
+    if (i === 7) {
       // Check if critical steps are missing (guardrail)
       if (!answers.statut || !answers.chauffage || !answers.logement || !answers.revenus || !$("#ban").value || !$("#fSurface").value) {
         $("#qReward").hidden = true;

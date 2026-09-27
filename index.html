@@ -241,7 +241,7 @@
     <form class="qual reveal d2" id="qual" action="https://formspree.io/f/xgobgwpk" method="POST" novalidate aria-label="Test d'éligibilité">
       <div class="qual-top">
         <span class="qual-count mono" aria-live="polite"><b id="qNow">01</b> / 07</span>
-        <div class="qual-bar" id="qBar" role="progressbar" aria-label="Progression du test" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1"><span></span></div>
+        <div class="qual-bar" id="qBar" role="progressbar" aria-label="Progression du test" aria-valuemin="1" aria-valuemax="8" aria-valuenow="1"><span></span></div>
       </div>
 
       <!-- step 1 : statut -->
@@ -323,38 +323,42 @@
           <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button></div>
         </fieldset>
 
-        <!-- step 7 : coordonnées -->
-        <fieldset class="qstep" id="qForm" data-step="7" hidden>
-          <div class="qsummary" id="qSummary"></div>
-          
-          <div id="qReward" class="reward-box" hidden style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-bottom:2rem;border:1px solid var(--c-primary);text-align:center;">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
-            <h3 style="color:var(--c-primary);margin-bottom:1rem;font-size:1.25rem;">Votre profil semble compatible avec les aides PAC</h3>
-            <ul style="list-style:none;padding:0;text-align:left;font-size:0.9rem;margin-bottom:1rem;line-height:1.5;display:inline-block;">
-              <li>📍 <b>Département <span id="rwdDep"></span></b> : zone couverte</li>
-              <li>🔥 <b>Chaudière <span id="rwdChauf"></span></b> : prioritaire pour le remplacement</li>
-            </ul>
-            <p style="font-weight:600;">Dernière étape : recevez votre estimation au créneau de votre choix</p>
-          </div>
-          
-          <div id="qRewardFail" class="reward-box" style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-bottom:2rem;text-align:center;color:var(--c-ink);">
-            <p>Complétez le test pour obtenir votre estimation.</p>
-          </div>
+        <!-- step 7 : nom / email -->
+          <fieldset class="qstep" id="qStep7" data-step="7" hidden>
+            <legend class="q" tabindex="-1">Dernière étape ! Comment vous appelez-vous ?</legend>
+            <div class="field"><label for="fNom">Nom et prénom *</label><input type="text" id="fNom" name="nom_prenom" autocomplete="name" required></div>
+            <div class="field"><label for="fEmail">Email <span class="opt-hint">(facultatif, pour l'envoi du récapitulatif)</span></label><input type="email" id="fEmail" name="email" autocomplete="email"></div>
+            <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="button" class="btn btn-primary" data-next>Suivant</button></div>
+          </fieldset>
 
-          <legend class="q" tabindex="-1" style="font-size:1.1rem;">Où vous rappeler ?</legend>
-          <div class="field"><label for="fNom">Nom et prénom *</label><input type="text" id="fNom" name="nom_prenom" autocomplete="name" required></div>
-          <div class="grid2">
+          <!-- step 8 : téléphone (formulaire final) -->
+          <fieldset class="qstep" id="qForm" data-step="8" hidden>
+            <div class="qsummary" id="qSummary"></div>
+            
+            <div id="qReward" class="reward-box" hidden style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-bottom:2rem;border:1px solid var(--c-primary);text-align:center;">
+              <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
+              <h3 style="color:var(--c-primary);margin-bottom:1rem;font-size:1.25rem;">Votre profil semble compatible avec les aides PAC</h3>
+              <ul style="list-style:none;padding:0;text-align:left;font-size:0.9rem;margin-bottom:1rem;line-height:1.5;display:inline-block;">
+                <li>📍 <b>Département <span id="rwdDep"></span></b> : zone couverte</li>
+                <li>🔥 <b>Chaudière <span id="rwdChauf"></span></b> : prioritaire pour le remplacement</li>
+                <li id="rwdAides" style="display:none;color:var(--terra-700);">💶 <b>Aides indicatives :</b> <span id="rwdAidesTxt"></span></li>
+              </ul>
+              <p style="font-weight:600;">Dernière étape : recevez votre estimation au créneau de votre choix</p>
+            </div>
+            
+            <div id="qRewardFail" class="reward-box" style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-bottom:2rem;text-align:center;color:var(--c-ink);">
+              <p>Complétez le test pour obtenir votre estimation.</p>
+            </div>
+
+            <legend class="q" tabindex="-1" style="font-size:1.1rem;">Où notre conseiller peut-il vous joindre ?</legend>
+            <p style="font-size:0.875rem;color:var(--ink-500);margin-bottom:1rem;font-style:italic;">Promis, un seul appel pour valider l'étude, pas de harcèlement.</p>
+            
             <div class="field"><label for="tel">Téléphone *</label><div class="tel-wrap"><span class="pfx">+33</span><input type="tel" id="tel" name="telephone" inputmode="tel" autocomplete="tel-national" maxlength="14" required></div></div>
-            <div class="field"><label for="fEmail">Email <span class="opt-hint">(facultatif)</span></label><input type="email" id="fEmail" name="email" autocomplete="email"></div>
-          </div>
-          <div class="field"><label for="fCreneau">Heure de rappel</label><select id="fCreneau" name="creneau"><option>Pas de préférence</option><option>8 h - 12 h</option><option>12 h - 14 h</option><option>14 h - 18 h</option><option>18 h - 20 h</option></select></div>
-          <label class="consent"><input type="checkbox" name="consentement" value="oui" required> J'accepte d'être recontacté au sujet de mon projet. Un seul appel, aucun démarchage répété.</label>
-          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-          <input type="hidden" name="_subject" value="Nouveau lead PAC">
-          <input type="hidden" name="utm_source" id="utm_source"><input type="hidden" name="utm_medium" id="utm_medium"><input type="hidden" name="utm_campaign" id="utm_campaign"><input type="hidden" name="utm_term" id="utm_term"><input type="hidden" name="utm_content" id="utm_content"><input type="hidden" name="gclid" id="gclid"><input type="hidden" name="page_url" id="page_url"><input type="hidden" name="referrer" id="referrer">
-          <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="submit" class="btn btn-primary qsubmit">Obtenir mon estimation personnalisée</button></div>
-          <p class="qual-status mono" id="qStatus" role="status" aria-live="polite"></p>
-        </fieldset>
+            <div class="field"><label for="fCreneau">Heure de rappel idéale</label><select id="fCreneau" name="creneau"><option>Pas de préférence</option><option>8 h - 12 h</option><option>12 h - 14 h</option><option>14 h - 18 h</option><option>18 h - 20 h</option></select></div>
+            <label class="consent"><input type="checkbox" name="consentement" value="oui" required> J'accepte d'être recontacté au sujet de mon projet. Un seul appel, aucun démarchage répété.</label>
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+            <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="submit" class="btn btn-primary qsubmit" id="btnSubmit">Voir mon estimation</button></div>
+          </fieldset>
 
       <!-- success -->
         <div class="qsuccess" id="qSuccess" hidden tabindex="-1">
