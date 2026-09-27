@@ -394,11 +394,11 @@
 </main>
 
 <!-- Consent Banner -->
-<div id="consentBanner" style="position:fixed;bottom:0;left:0;width:100%;background:var(--c-ink);color:var(--c-l2);padding:1rem;z-index:9999;font-size:0.875rem;transform:translateY(100%);transition:transform 0.4s ease;box-shadow:0 -4px 10px rgba(0,0,0,0.1);">
+<div id="consentBanner" style="position:fixed;bottom:0;left:0;width:100%;background:var(--cream-50);color:var(--ink-900);border-top:1px solid var(--border);padding:1rem;z-index:9999;font-size:0.875rem;transform:translateY(100%);transition:transform 0.4s ease;box-shadow:0 -4px 10px rgba(0,0,0,0.1);">
   <div class="wrap" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
     <div style="flex:1 1 300px;line-height:1.4;">
       Nous utilisons des cookies pour mesurer notre audience et améliorer nos campagnes (Google Ads).
-      <div id="consentOptions" style="display:none;margin-top:1rem;background:rgba(255,255,255,0.05);padding:1rem;border-radius:0.5rem;">
+      <div id="consentOptions" style="display:none;margin-top:1rem;background:var(--cream-100);padding:1rem;border-radius:0.5rem;">
         <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;cursor:pointer;">
           <input type="checkbox" id="chkAnalytics" checked> Mesure d'audience (Google Analytics)
         </label>
@@ -409,8 +409,8 @@
     </div>
     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
       <button id="btnConsentAcc" class="btn btn-primary" style="padding:0.5rem 1rem;min-height:auto;">Tout accepter</button>
-      <button id="btnConsentCust" class="btn btn-secondary" style="padding:0.5rem 1rem;min-height:auto;background:transparent;color:var(--c-l2);border:1px solid var(--c-l2);">Personnaliser</button>
-      <button id="btnConsentRef" class="btn btn-secondary" style="padding:0.5rem 1rem;min-height:auto;background:transparent;color:var(--c-l2);border:1px solid var(--c-l2);">Tout refuser</button>
+      <button id="btnConsentCust" class="btn btn-secondary" style="padding:0.5rem 1rem;min-height:auto;">Personnaliser</button>
+      <button id="btnConsentRef" class="btn btn-secondary" style="padding:0.5rem 1rem;min-height:auto;">Tout refuser</button>
       <button id="btnConsentSave" class="btn btn-primary" style="padding:0.5rem 1rem;min-height:auto;display:none;">Enregistrer mes choix</button>
     </div>
   </div>
