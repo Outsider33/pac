@@ -355,6 +355,33 @@ var CONFIG = {
     }
   });
 
+  /* ---- choix du canal : offre dure (rappel) ou offre douce (email seul) ----
+     Bly, ch. 3 : un entonnoir à offre unique perd la majorite des repondants.
+     L'offre douce sort aussi du champ de l'interdiction du démarchage téléphonique,
+     qui ne vise que la voie téléphonique (L. 223-1, 5e alinea). */
+  function canalChoisi() {
+    var r = form.querySelector('input[name="canal"]:checked');
+    return r ? r.value : "telephone";
+  }
+  function appliquerCanal() {
+    var parEmail = canalChoisi() === "email";
+    var fldTel = $("#fldTel"), fldCreneau = $("#fldCreneau"),
+        champTel = $("#tel"), champEmail = $("#fEmail"),
+        hint = $("#hintEmail"), txt = $("#consentTxt"), hid = $("#fCanal");
+
+    if (fldTel) fldTel.hidden = parEmail;
+    if (fldCreneau) fldCreneau.hidden = parEmail;
+    if (champTel) { champTel.required = !parEmail; if (parEmail) champTel.setAttribute("aria-invalid", "false"); }
+    if (champEmail) champEmail.required = parEmail;
+    if (hint) hint.textContent = parEmail ? "(obligatoire — c'est là que part votre estimation)" : "(facultatif, pour l'envoi du récapitulatif)";
+    if (hid) hid.value = parEmail ? "email" : "telephone";
+    if (txt) txt.innerHTML = parEmail
+      ? "<strong>Je demande à recevoir par email</strong> mon estimation et le guide des aides, au sujet de mon projet de pompe à chaleur ou de système solaire combiné. Aucun appel."
+      : "<strong>Je demande à être rappelé</strong> au sujet de mon projet de pompe à chaleur ou de système solaire combiné. Un seul appel, sous 24 h ouvrées, aucun démarchage.";
+  }
+  $$('input[name="canal"]').forEach(function (r) { r.addEventListener("change", appliquerCanal); });
+  appliquerCanal();
+
   /* ---- masque téléphone +33 ---- */
   var tel = $("#tel");
   if (tel) tel.addEventListener("input", function () {
@@ -426,7 +453,8 @@ var CONFIG = {
         return;
       }
     }
-    var telVisible = tel && !tel.closest("fieldset").hidden;
+    var parEmail = canalChoisi() === "email";
+    var telVisible = tel && !tel.closest("fieldset").hidden && !parEmail;
     if (telVisible && !/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
     
     var locForm = document.getElementById("qLocataireForm");
@@ -454,6 +482,10 @@ var CONFIG = {
       fd.delete("demande_horodatage"); fd.delete("demande_objet");
     } else {
       fd.set("demande_horodatage", nowIso);
+      if (parEmail) { fd.delete("creneau"); }
+      fd.set("demande_objet", parEmail
+        ? "Estimation et guide demandés par email par le consommateur — aucun appel — projet de pompe à chaleur air/eau ou de système solaire combiné"
+        : "Rappel demandé par le consommateur — projet de pompe à chaleur air/eau ou de système solaire combiné (art. R223-4 du code de la consommation)");
       fd.delete("demande_horodatage_locataire"); fd.delete("demande_objet_locataire");
     }
 
@@ -464,14 +496,28 @@ var CONFIG = {
           if (locForm) locForm.hidden = true;
           $(".qual-top", form).hidden = true;
           var ok = $(isLocPath ? "#qLocataireSuccess" : "#qSuccess"); ok.hidden = false;
+          if (!isLocPath) {
+            var sucMain = $("#sucMain"), sucTel = $("#sucTel"), sucGuide = $("#sucGuide"), ics = $("#btnIcs");
+            if (sucTel) sucTel.hidden = parEmail;
+            if (ics) ics.hidden = parEmail;
+            if (sucGuide) sucGuide.hidden = !parEmail;
+            if (sucMain) sucMain.innerHTML = parEmail
+              ? "Votre estimation et le guide des aides partent <strong>par email</strong>. Pensez à regarder vos courriers indésirables. <strong>Personne ne vous appellera.</strong>"
+              : "Un conseiller vous rappelle <strong>sous 24 heures ouvrées</strong> avec votre estimation. Un seul appel, sans démarchage.";
+          }
           try { ok.focus({ preventScroll: true }); } catch (e2) {}
           
           // Un dossier locataire n'est PAS un lead : il ne peut pas aboutir sans l'accord
           // du proprietaire. L'envoyer comme form_submit_success ferait apprendre a Google
           // Ads d'acheter davantage de trafic locataire. Evenement distinct, non converti.
+          // L'offre douce est un lead reel mais d'intention plus faible, et sans telephone
+          // elle ne se traite pas de la meme maniere. Evenement distinct pour qu'elle puisse
+          // etre suivie sans etre, au depart, la conversion que Google Ads optimise.
           dataLayer.push(isLocPath
             ? { event: "dossier_locataire_envoye", lead_statut: answers.statut || "" }
-            : { event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "" });
+            : { event: parEmail ? "estimation_email_demandee" : "form_submit_success",
+                lead_canal: parEmail ? "email" : "telephone",
+                lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "" });
         }
         else { setStatus("Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })

@@ -270,6 +270,7 @@ legend.q{padding:0;outline:0}
 .opt .od{font-size:13px;color:var(--ink-500)}
 .opt:has(input:checked){border-color:var(--terra-500);background:var(--terra-100)}
 .field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.field[hidden]{display:none}
 .field label{font-size:13px;font-weight:600;color:var(--ink-700)}
 .field input,.field select,.field textarea{font-family:var(--font-body);font-size:15px;padding:12px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius-card);background:#fff;width:100%;transition:border-color 200ms,box-shadow 200ms}
 .field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--sage-600);box-shadow:0 0 0 3px rgba(122,148,113,.3)}
