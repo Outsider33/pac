@@ -446,6 +446,17 @@ var CONFIG = {
     // Un seul parcours par lead : on retire les champs (vides) de l'autre parcours
     (isLocPath ? ["nom_prenom", "email", "adresse", "surface", "creneau"] : ["nom_prenom_locataire", "email_locataire"]).forEach(function (k) { fd.delete(k); });
 
+    // Art. R223-4 c. consommation : horodater la demande du consommateur.
+    // C'est la justification de « la réalité de la demande d'information », à archiver 3 ans.
+    var nowIso = new Date().toISOString();
+    if (isLocPath) {
+      fd.set("demande_horodatage_locataire", nowIso);
+      fd.delete("demande_horodatage"); fd.delete("demande_objet");
+    } else {
+      fd.set("demande_horodatage", nowIso);
+      fd.delete("demande_horodatage_locataire"); fd.delete("demande_objet_locataire");
+    }
+
     fetch(form.action, { method: "POST", body: fd, headers: { Accept: "application/json" } })
       .then(function (r) {
         if (r.ok) {
