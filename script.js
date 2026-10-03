@@ -175,9 +175,9 @@ var CONFIG = {
         
         var chaufItem = $("#rwdChauf").parentNode;
         if (answers.chauffage === "Électrique") {
-            chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-300);margin-right:.5rem;\">01</span><b>Votre logement</b> : compatible avec un Système Solaire Combiné";
+            chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-500);margin-right:.5rem;\">01</span><b>Votre logement</b> : compatible avec un Système Solaire Combiné";
         } else {
-            chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-300);margin-right:.5rem;\">01</span><b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
+            chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-500);margin-right:.5rem;\">01</span><b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
         }
         
         var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
