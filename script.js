@@ -141,7 +141,7 @@ var CONFIG = {
   function setStatus(msg, err) {
     if (!status) return;
     status.textContent = msg;
-    status.style.color = err ? "var(--c-err)" : "inherit";
+    status.style.color = err ? "var(--ocre-500)" : "inherit";
     status.classList.toggle("err", !!err);
   }
 
@@ -175,9 +175,9 @@ var CONFIG = {
         
         var chaufItem = $("#rwdChauf").parentNode;
         if (answers.chauffage === "Électrique") {
-            chaufItem.innerHTML = "☀️ <b>Votre logement</b> : compatible avec un Système Solaire Combiné";
+            chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-300);margin-right:.5rem;\">01</span><b>Votre logement</b> : compatible avec un Système Solaire Combiné";
         } else {
-            chaufItem.innerHTML = "🔥 <b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
+            chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-300);margin-right:.5rem;\">01</span><b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
         }
         
         var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
@@ -412,7 +412,7 @@ var CONFIG = {
     e.preventDefault();
     if (isSubmitting) return;
 
-    if (form.action.indexOf("__FORMSPREE_ID__") !== -1) { setStatus("⚠️ Configurez Formspree (remplacez __FORMSPREE_ID__).", true); return; }
+    if (form.action.indexOf("__FORMSPREE_ID__") !== -1) { setStatus("Configurez Formspree (remplacez __FORMSPREE_ID__).", true); return; }
     
     var visibleFieldset = document.querySelector(".qstep:not([hidden]), .qsuccess:not([hidden])#qLocataireForm");
     var fields = visibleFieldset ? $$("input[required], select[required]", visibleFieldset) : [];
@@ -460,9 +460,9 @@ var CONFIG = {
             ? { event: "dossier_locataire_envoye", lead_statut: answers.statut || "" }
             : { event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "" });
         }
-        else { setStatus("⚠️ Une erreur est survenue. Réessayez ou appelez-nous.", true); }
+        else { setStatus("Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })
-      .catch(function () { setStatus("⚠️ Connexion impossible. Appelez-nous directement.", true); })
+      .catch(function () { setStatus("Connexion impossible. Appelez-nous directement.", true); })
       .finally(function () { 
         isSubmitting = false; 
         if (btn) { btn.disabled = false; btn.textContent = orig; } 

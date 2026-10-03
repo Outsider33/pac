@@ -284,23 +284,23 @@
       <fieldset class="qstep" id="qStep4" data-step="4" hidden>
         <legend class="q" tabindex="-1">Surface habitable de votre logement ?</legend>
         <div class="field"><label for="fSurface">Surface (m²) *</label><input type="number" id="fSurface" name="surface" min="20" max="250" inputmode="numeric" aria-describedby="surfErr" required>
-          <div id="surfErr" class="error-inline" aria-live="polite" style="color:var(--c-err);font-size:0.875rem;margin-top:0.5rem;"></div></div>
+          <div id="surfErr" class="error-inline" aria-live="polite" style="color:var(--ocre-500);font-size:0.875rem;margin-top:0.5rem;"></div></div>
         <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="button" class="btn btn-primary" data-next>Suivant</button></div>
       </fieldset>
 
       <!-- step 5 : contact final -->
       <fieldset class="qstep" id="qStep5" data-step="5" hidden>
-        <div id="qReward" class="reward-box" hidden style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-bottom:2rem;border:1px solid var(--c-primary);text-align:center;">
-          <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
-          <h3 style="color:var(--c-primary);margin-bottom:1rem;font-size:1.25rem;">Votre profil semble compatible avec les aides PAC</h3>
+        <div id="qReward" class="reward-box" hidden style="background:var(--sage-50);padding:1.5rem;border-radius:var(--radius-card);margin-bottom:2rem;border:1px solid var(--sage-600);text-align:center;">
+          <img src="assets/seal.svg" alt="" width="52" height="52" style="margin-bottom:0.5rem;">
+          <h3 style="color:var(--sage-600);margin-bottom:1rem;font-size:1.25rem;">Votre profil semble compatible avec les aides PAC</h3>
           <ul style="list-style:none;padding:0;text-align:left;font-size:0.9rem;margin-bottom:1rem;line-height:1.5;display:inline-block;">
-            <li>🔥 <b>Chaudière <span id="rwdChauf"></span></b> : prioritaire pour le remplacement</li>
-            <li id="rwdAides" style="display:none;color:var(--terra-700);">💶 <span id="rwdAidesTxt"></span></li>
+            <li><span class="mono" style="color:var(--ink-300);margin-right:.5rem;">01</span><b>Chaudière <span id="rwdChauf"></span></b> : prioritaire pour le remplacement</li>
+            <li id="rwdAides" style="display:none;color:var(--terra-700);"><span class="mono" style="color:var(--ink-300);margin-right:.5rem;">02</span><span id="rwdAidesTxt"></span></li>
           </ul>
           <p style="font-weight:600;">Dernière étape : recevez votre estimation au créneau de votre choix</p>
         </div>
         
-        <div id="qRewardFail" class="reward-box" style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-bottom:2rem;text-align:center;color:var(--c-ink);">
+        <div id="qRewardFail" class="reward-box" style="background:var(--sage-50);padding:1.5rem;border-radius:var(--radius-card);margin-bottom:2rem;text-align:center;color:var(--ink-900);">
           <p>Complétez le test pour obtenir votre estimation.</p>
         </div>
 
@@ -350,7 +350,7 @@
           <span class="eyebrow">Demande envoyée</span>
           <h3>Votre demande est <span class="it">en route.</span></h3>
           <p>Un conseiller vous rappelle <strong>sous 24 heures ouvrées</strong> avec votre estimation. Un seul appel, sans démarchage.</p>
-          <p style="margin-top:1rem;color:var(--c-primary);font-weight:600;">Vous serez appelé du 07 80 94 82 05 — enregistrez ce numéro pour ne pas rater l'appel.</p>
+          <p style="margin-top:1rem;color:var(--sage-600);font-weight:600;">Vous serez appelé du 07 80 94 82 05 — enregistrez ce numéro pour ne pas rater l'appel.</p>
           <a id="btnIcs" class="btn btn-primary" href="#" download="Rappel_PAC.ics" style="margin-top:1rem;margin-bottom:1rem;display:inline-block;">Ajouter le créneau à mon agenda</a>
           <br>
           <a class="btn btn-secondary" href="tel:+33780948205">Une question ? · 07 80 94 82 05</a>
@@ -373,7 +373,7 @@
         </div>
       </form>
     <noscript>
-      <div style="background:var(--c-l2);padding:1.5rem;border-radius:1rem;margin-top:2rem;text-align:center;">
+      <div style="background:var(--sage-50);padding:1.5rem;border-radius:var(--radius-card);margin-top:2rem;text-align:center;">
         <p>Votre navigateur bloque le test en ligne. Appelez-nous au <a href="tel:+33780948205">07 80 94 82 05</a> ou écrivez à <a href="mailto:contact@pac-1euro.com">contact@pac-1euro.com</a> — étude gratuite selon les mêmes critères.</p>
       </div>
     </noscript>
