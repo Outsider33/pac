@@ -371,6 +371,13 @@ legend.q{padding:0;outline:0}
   .footer-grid{grid-template-columns:1fr 1fr}
   .hero-ctas{flex-direction:column;align-items:stretch} .btn{justify-content:center}
   .qs-opts{flex-direction:column;align-items:stretch}
+  /* Lisibilite mobile : on remonte les libelles qui portent de l information.
+     Le public vise remplace une chaudiere fioul ou gaz, il a majoritairement
+     plus de 50 ans. Les surtitres purement decoratifs (.eyebrow, .num, .code)
+     restent a 11px pour ne pas aplatir la hierarchie typographique. */
+  .hero-phone-l{font-size:12.5px;letter-spacing:.10em}
+  .sol-pillar .k{font-size:12px;letter-spacing:.10em}
+  .qs-label{font-size:12px;letter-spacing:.10em}
 }
 @media (max-width:480px){
   .hdr .btn-primary{display:none}
