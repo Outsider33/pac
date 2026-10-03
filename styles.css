@@ -176,8 +176,8 @@ nav.primary a:hover::after{transform:scaleX(1)}
   display:grid;grid-template-columns:1.05fr 1.7fr;position:relative;transition:border-color 260ms,transform 340ms var(--ease),box-shadow 340ms}
 .sol::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--terra-500);transform:scaleY(0);transform-origin:top;transition:transform 420ms var(--ease)}
 .sol:hover::before{transform:scaleY(1)} .sol:hover{border-color:var(--sage-600);transform:translateY(-3px);box-shadow:var(--shadow-card)}
-.sol-media{grid-column:1/-1;background:var(--cream-50);border-bottom:1px solid var(--border);padding:18px 36px 8px}
-.sol-media svg,.sol-media img{width:100%;max-width:440px;margin:0 auto;height:auto}
+.sol-media{grid-column:1/-1;background:var(--cream-50);border-bottom:1px solid var(--border);padding:22px 36px 18px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.sol-media svg,.sol-media img{width:100%;max-width:none;margin:0;height:auto;border-radius:var(--radius-card)}
 .sol-body{padding:30px 36px;display:flex;flex-direction:column;gap:10px}
 .sol-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .sol .code{font-family:var(--font-mono);font-size:11px;color:var(--terra-700);letter-spacing:.08em;transition:letter-spacing 300ms}
@@ -359,6 +359,7 @@ legend.q{padding:0;outline:0}
   .sticky-cta{display:flex}
 }
 @media (max-width:600px){
+  .sol-media{grid-template-columns:1fr;gap:18px}
   section{padding:60px 0}
   .hdr .btn-primary{display:none}
   .hero::before{background-image:url('assets/hero-pac-hd-900.jpg');background-position:72% 38%}
