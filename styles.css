@@ -165,10 +165,10 @@ nav.primary a:hover::after{transform:scaleX(1)}
 /* =========================================================================
    SECTION HEADS
    ========================================================================= */
-.sec-head{display:flex;justify-content:space-between;align-items:end;gap:48px;flex-wrap:wrap;margin-bottom:8px}
+.sec-head{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.8fr);gap:24px 56px;align-items:end;margin-bottom:8px}
 .sec-head .eyebrow{margin-bottom:14px;display:block}
 .sec-title{font-size:clamp(30px,3.4vw,46px);line-height:1.05}
-.sec-sub{font-size:16px;color:var(--ink-500);line-height:1.55;max-width:40ch}
+.sec-sub{font-size:16px;color:var(--ink-500);line-height:1.55;max-width:36ch;padding-bottom:6px}
 
 /* solution rows */
 .solutions{display:flex;flex-direction:column;gap:18px;margin-top:52px}
@@ -352,6 +352,7 @@ legend.q{padding:0;outline:0}
   .grat-inner{grid-template-columns:1fr;gap:32px}
   .sol{grid-template-columns:1fr} .sol-grid{border-left:0;border-top:1px solid var(--border);padding-top:24px}
   .mech{grid-template-columns:1fr 1fr} .mech::after,.mech::before{display:none}
+  .sec-head{grid-template-columns:1fr;gap:18px}
   .proof-grid{grid-template-columns:1fr;gap:36px}
   .form-wrap{grid-template-columns:1fr;gap:34px}
 }
@@ -376,3 +377,6 @@ legend.q{padding:0;outline:0}
 
 /* Added for Form Accessibility */
 #formulaire { scroll-margin-bottom: 80px; }
+
+#garanties{background:var(--bg-sunken)}
+
