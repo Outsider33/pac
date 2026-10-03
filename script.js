@@ -339,15 +339,17 @@ var CONFIG = {
     });
   });
 
-  // Validation Surface (30-500)
+  // Validation Surface : 20 a 250 m2. Le message enonce NOTRE perimetre d'intervention,
+  // pas une regle imposee au visiteur, et il laisse une porte de sortie (le telephone)
+  // plutot que de clore le parcours.
   var fSurf = $("#fSurface");
   var surfErr = $("#surfErr");
   if(fSurf) fSurf.addEventListener("input", function() {
     var v = parseInt(this.value, 10);
     if (v < 20 || v > 250) {
-      this.setCustomValidity("La surface doit être comprise entre 20 et 250 m².");
+      this.setCustomValidity("Nous intervenons sur des logements de 20 à 250 m² habitables.");
       this.setAttribute("aria-invalid", "true");
-      if (surfErr) surfErr.textContent = "La surface doit être comprise entre 20 et 250 m².";
+      if (surfErr) surfErr.innerHTML = "Nos installateurs interviennent sur des logements de <strong>20 à 250 m²</strong> habitables. En dehors de cette plage, votre projet demande une étude à part : appelez-nous au <a href='tel:+33780948205' style='color:inherit;text-decoration:underline;'>07 80 94 82 05</a>.";
     } else {
       this.setCustomValidity("");
       this.removeAttribute("aria-invalid");
