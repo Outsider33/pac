@@ -360,7 +360,7 @@ legend.q{padding:0;outline:0}
 }
 @media (max-width:600px){
   section{padding:60px 0}
-  .hdr .btn-primary{padding:11px 13px;font-size:13px}
+  .hdr .btn-primary{display:none}
   .hero::before{background-image:url('assets/hero-pac-hd-900.jpg');background-position:72% 38%}
   .cartouche{max-width:100%;padding:24px 22px}
   .opts{grid-template-columns:1fr} .grid2{grid-template-columns:1fr} .mech{grid-template-columns:1fr}
