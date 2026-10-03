@@ -1,9 +1,3 @@
-const AIDES_INDICATIVES = {
-  "Revenus très modestes": "jusqu'à environ 10 800 € (à confirmer)",
-  "Revenus modestes": "jusqu'à environ 8 000 € (à confirmer)",
-  "Revenus intermédiaires": "jusqu'à environ 5 000 € (à confirmer)",
-  "Revenus supérieurs": "aides CEE possibles, hors barème MaPrimeRénov'"
-};
 
 var CONFIG = {
   GTM_ID: "GTM-XXXXXXX" // À REMPLACER
@@ -138,7 +132,7 @@ var CONFIG = {
 
   /* ---- FORMULAIRE ---- */
   var form = $("#qual"); if (!form) return;
-  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qStep5", "qStep6", "qStep7", "qForm"];
+  var steps = ["qStep1", "qStep2", "qStep3", "qStep4", "qStep5"];
   var cur = 0;
   var elNow = $("#qNow"), bar = $("#qBar"), barSpan = $("#qBar span"), status = $("#qStatus");
   var answers = {};
@@ -166,23 +160,18 @@ var CONFIG = {
       if (el) el.hidden = (idx !== i);
     });
     if (elNow) elNow.textContent = pad(i + 1);
-    if (barSpan) barSpan.style.width = ((i + 1) / 8) * 100 + "%";
-    if (bar) { bar.classList.toggle("full", i === 7); bar.setAttribute("aria-valuenow", i + 1); }
+    if (barSpan) barSpan.style.width = ((i + 1) / 5) * 100 + "%";
+    if (bar) { bar.classList.toggle("full", i === 4); bar.setAttribute("aria-valuenow", i + 1); }
     setStatus("");
     
     // Reward screen updates dynamically if step 7
-    if (i === 7) {
-      // Check if critical steps are missing (guardrail)
-      if (!answers.statut || !answers.chauffage || !answers.logement || !answers.revenus || !$("#ban").value || !$("#fSurface").value) {
+    if (i === 4) {
+      if (!answers.statut || !answers.chauffage || !answers.logement || !$("#fSurface").value) {
         $("#qReward").hidden = true;
         $("#qRewardFail").hidden = false;
       } else {
         $("#qReward").hidden = false;
         $("#qRewardFail").hidden = true;
-        
-        var dptMatch = $("#ban").value.match(/\b\d{2}/);
-        var dep = dptMatch ? dptMatch[0] : "";
-        $("#rwdDep").textContent = dep;
         
         var chaufItem = $("#rwdChauf").parentNode;
         if (answers.chauffage === "Électrique") {
@@ -191,23 +180,25 @@ var CONFIG = {
             chaufItem.innerHTML = "🔥 <b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
         }
         
-        var aideItem = document.getElementById("rwdAide");
-        if (!aideItem) {
-            aideItem = document.createElement("li");
-            aideItem.id = "rwdAide";
-            chaufItem.parentNode.appendChild(aideItem);
-        }
-        var aideVal = AIDES_INDICATIVES[answers.revenus] || "aides CEE possibles";
-        aideItem.innerHTML = "💶 <b>Aide estimée</b> : " + aideVal;
+        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : "Aides pouvant atteindre 10 800 €, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
+        $("#rwdAidesTxt").textContent = aideTxt;
+        $("#rwdAides").style.display = "list-item";
       }
 
-      var first = $("#qForm input[name=nom_prenom]");
+      var first = $("#qStep5 input[name=nom_prenom]");
       if (first && moveFocus !== false) setTimeout(function () { try { first.focus({ preventScroll: true }); } catch (e) {} }, 360);
     } else if (moveFocus) {
       var s = $("#" + steps[i]);
       var legend = s ? s.querySelector("legend") : null;
       if (legend) setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, 360);
     }
+  }
+
+  function showLocataireMsg() {
+    steps.forEach(function (id) { var el = document.getElementById(id); if(el) el.hidden = true; });
+    var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
+    var loc = document.getElementById("qLocataireMsg");
+    if(loc) { loc.hidden = false; try { loc.focus({ preventScroll: true }); } catch (e) {} }
   }
 
   function showHorsCible(msg) {
@@ -230,6 +221,16 @@ var CONFIG = {
     if(ssc) { ssc.hidden = false; try { ssc.focus({ preventScroll: true }); } catch (e) {} }
   }
 
+  
+  var btnContinueLocataire = document.getElementById("btnContinueLocataire");
+  if(btnContinueLocataire) {
+    btnContinueLocataire.addEventListener("click", function() {
+      var loc = document.getElementById("qLocataireMsg"); if(loc) loc.hidden = true;
+      var locForm = document.getElementById("qLocataireForm"); if(locForm) locForm.hidden = false;
+      var first = locForm.querySelector("input"); if(first) setTimeout(function(){try{first.focus();}catch(e){}}, 240);
+    });
+  }
+
   var btnContinueSsc = document.getElementById("btnContinueSsc");
   if(btnContinueSsc) {
     btnContinueSsc.addEventListener("click", function() {
@@ -248,7 +249,20 @@ var CONFIG = {
       if (ssc) {
         ssc.hidden = true;
         var top = document.querySelector(".qual-top"); if(top) top.hidden = false;
-        show(1, true); // retour étape chauffage
+        show(1, true);
+        return;
+      }
+      var locMsg = b.closest("#qLocataireMsg");
+      if (locMsg) {
+        locMsg.hidden = true;
+        var top = document.querySelector(".qual-top"); if(top) top.hidden = false;
+        show(0, true);
+        return;
+      }
+      var locForm = b.closest("#qLocataireForm");
+      if (locForm) {
+        locForm.hidden = true;
+        showLocataireMsg();
         return;
       }
       show(Math.max(0, cur - 1), true); 
@@ -277,19 +291,10 @@ var CONFIG = {
       answers[r.name] = r.value;
       
       if (r.name === "statut") {
-        if (answers.statut === "Locataire occupant") {
-          document.getElementById("locataireAccord").hidden = false;
+        if (answers.statut === "Locataire") {
+          setTimeout(function() { showLocataireMsg(); }, 240);
         } else {
-          document.getElementById("locataireAccord").hidden = true;
           setTimeout(function () { show(1, true); }, 240);
-        }
-      }
-      
-      if (r.name === "accord_proprio") {
-        if (answers.accord_proprio === "Non") {
-          setTimeout(function() { showHorsCible("Il est indispensable d'avoir l'accord de votre propriétaire pour procéder à l'installation d'une pompe à chaleur."); }, 240);
-        } else {
-          setTimeout(function() { show(1, true); }, 240);
         }
       }
 
@@ -311,7 +316,26 @@ var CONFIG = {
         }
       }
 
-      if (r.name === "revenus") setTimeout(function () { show(6, true); }, 240);
+      
+    });
+  });
+
+  /* ---- quick-start depuis le hero : pré-sélectionne le statut (restauré de b703122, 3 statuts) ---- */
+  $$("[data-qs]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var v = b.getAttribute("data-qs");
+      var radio = form.querySelector('input[name="statut"][value="' + v + '"]');
+      if (radio) { radio.checked = true; answers.statut = v; }
+      ["qLocataireMsg", "qLocataireForm", "qSsc", "qHorsCible"].forEach(function (id) { var el = document.getElementById(id); if (el) el.hidden = true; });
+      var top = document.querySelector(".qual-top"); if (top) top.hidden = false;
+      if (v === "Locataire") {
+        showLocataireMsg();
+      } else {
+        show(1, false);
+      }
+      if (formSec) formSec.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+      var legend = $("#qStep2 legend");
+      if (legend && v !== "Locataire") setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 600);
     });
   });
 
@@ -320,9 +344,9 @@ var CONFIG = {
   var surfErr = $("#surfErr");
   if(fSurf) fSurf.addEventListener("input", function() {
     var v = parseInt(this.value, 10);
-    if (v < 20 || v > 400) {
-      this.setCustomValidity("La surface doit être comprise entre 20 et 400 m².");
-      if (surfErr) surfErr.textContent = "La surface doit être comprise entre 20 et 400 m².";
+    if (v < 20 || v > 250) {
+      this.setCustomValidity("La surface doit être comprise entre 20 et 250 m².");
+      if (surfErr) surfErr.textContent = "La surface doit être comprise entre 20 et 250 m².";
     } else {
       this.setCustomValidity("");
       if (surfErr) surfErr.textContent = "";
@@ -390,7 +414,8 @@ var CONFIG = {
 
     if (form.action.indexOf("__FORMSPREE_ID__") !== -1) { setStatus("⚠️ Configurez Formspree (remplacez __FORMSPREE_ID__).", true); return; }
     
-    var fields = $$("#qForm input[required], #qForm select[required]");
+    var visibleFieldset = document.querySelector(".qstep:not([hidden]), .qsuccess:not([hidden])#qLocataireForm");
+    var fields = visibleFieldset ? $$("input[required], select[required]", visibleFieldset) : [];
     for (var i = 0; i < fields.length; i++) {
       if (!fields[i].checkValidity()) {
         var f = fields[i], box = f.closest(".field, label");
@@ -399,9 +424,12 @@ var CONFIG = {
         return;
       }
     }
-    if (tel && !/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
+    var telVisible = tel && !tel.closest("fieldset").hidden;
+    if (telVisible && !/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
     
-    var btn = $(".qsubmit", form); var orig = btn ? btn.textContent : "";
+    var locForm = document.getElementById("qLocataireForm");
+    var isLocPath = !!(locForm && !locForm.hidden);
+    var btn = $(".qsubmit", visibleFieldset || form); var orig = btn ? btn.textContent : "";
     if (btn) { btn.disabled = true; btn.textContent = "Envoi…"; }
     isSubmitting = true;
 
@@ -411,14 +439,18 @@ var CONFIG = {
     var telE164 = "+33" + rawTel;
 
     var fd = new FormData(form); 
-    fd.set("telephone", telE164);
+    if (telVisible) { fd.set("telephone", telE164); }
+    if (!telVisible) { fd.delete("telephone"); }
+    // Un seul parcours par lead : on retire les champs (vides) de l'autre parcours
+    (isLocPath ? ["nom_prenom", "email", "adresse", "surface", "creneau"] : ["nom_prenom_proprietaire", "email_proprietaire"]).forEach(function (k) { fd.delete(k); });
 
     fetch(form.action, { method: "POST", body: fd, headers: { Accept: "application/json" } })
       .then(function (r) {
         if (r.ok) {
           steps.forEach(function (id) { $("#" + id).hidden = true; });
+          if (locForm) locForm.hidden = true;
           $(".qual-top", form).hidden = true;
-          var ok = $("#qSuccess"); ok.hidden = false;
+          var ok = $(isLocPath ? "#qLocataireSuccess" : "#qSuccess"); ok.hidden = false;
           try { ok.focus({ preventScroll: true }); } catch (e2) {}
           
           dataLayer.push({ event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
