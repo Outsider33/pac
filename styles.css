@@ -345,7 +345,7 @@ legend.q{padding:0;outline:0}
 /* =========================================================================
    RESPONSIVE
    ========================================================================= */
-@media (max-width:980px){
+@media (max-width:61.25em){
   nav.primary{display:none}
   .hero{min-height:92vh;min-height:92svh}
   .hero::after{background:linear-gradient(0deg,rgba(20,40,28,.62),rgba(20,40,28,.14) 46%,transparent 72%)}
@@ -357,10 +357,10 @@ legend.q{padding:0;outline:0}
   .proof-grid{grid-template-columns:1fr;gap:36px}
   .form-wrap{grid-template-columns:1fr;gap:34px}
 }
-@media (max-width:980px){
+@media (max-width:61.25em){
   .sticky-cta{display:flex}
 }
-@media (max-width:600px){
+@media (max-width:37.5em){
   .sol-media{border-right:0;border-bottom:1px solid var(--border);padding:20px}
   .sol-grid{grid-template-columns:1fr}
   section{padding:60px 0}
@@ -371,16 +371,20 @@ legend.q{padding:0;outline:0}
   .footer-grid{grid-template-columns:1fr 1fr}
   .hero-ctas{flex-direction:column;align-items:stretch} .btn{justify-content:center}
   .qs-opts{flex-direction:column;align-items:stretch}
-  /* Lisibilite mobile : on remonte les libelles qui portent de l information.
-     Le public vise remplace une chaudiere fioul ou gaz, il a majoritairement
-     plus de 50 ans. Les surtitres purement decoratifs (.eyebrow, .num, .code)
-     restent a 11px pour ne pas aplatir la hierarchie typographique. */
+}
+@media (max-width:30em){
+  .hdr .btn-primary{display:none}
+}
+
+/* Lisibilite des libelles porteurs d'information, sur tout ce qui se tient en main.
+   Point de rupture propre au composant, pas celui de la grille : Marcotte, "content out".
+   Le public vise remplace une chaudiere fioul ou gaz et a majoritairement plus de 50 ans.
+   Les surtitres purement decoratifs (.eyebrow, .num, .code, .sol-tag) restent a 11px
+   pour ne pas aplatir la hierarchie typographique. */
+@media (max-width:56.25em){
   .hero-phone-l{font-size:12.5px;letter-spacing:.10em}
   .sol-pillar .k{font-size:12px;letter-spacing:.10em}
   .qs-label{font-size:12px;letter-spacing:.10em}
-}
-@media (max-width:480px){
-  .hdr .btn-primary{display:none}
 }
 
 /* Added for Form Accessibility */
