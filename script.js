@@ -442,7 +442,7 @@ var CONFIG = {
     if (telVisible) { fd.set("telephone", telE164); }
     if (!telVisible) { fd.delete("telephone"); }
     // Un seul parcours par lead : on retire les champs (vides) de l'autre parcours
-    (isLocPath ? ["nom_prenom", "email", "adresse", "surface", "creneau"] : ["nom_prenom_proprietaire", "email_proprietaire"]).forEach(function (k) { fd.delete(k); });
+    (isLocPath ? ["nom_prenom", "email", "adresse", "surface", "creneau"] : ["nom_prenom_locataire", "email_locataire"]).forEach(function (k) { fd.delete(k); });
 
     fetch(form.action, { method: "POST", body: fd, headers: { Accept: "application/json" } })
       .then(function (r) {
@@ -453,7 +453,12 @@ var CONFIG = {
           var ok = $(isLocPath ? "#qLocataireSuccess" : "#qSuccess"); ok.hidden = false;
           try { ok.focus({ preventScroll: true }); } catch (e2) {}
           
-          dataLayer.push({ event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
+          // Un dossier locataire n'est PAS un lead : il ne peut pas aboutir sans l'accord
+          // du proprietaire. L'envoyer comme form_submit_success ferait apprendre a Google
+          // Ads d'acheter davantage de trafic locataire. Evenement distinct, non converti.
+          dataLayer.push(isLocPath
+            ? { event: "dossier_locataire_envoye", lead_statut: answers.statut || "" }
+            : { event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
         }
         else { setStatus("⚠️ Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })
