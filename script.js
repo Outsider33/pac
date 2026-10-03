@@ -458,7 +458,7 @@ var CONFIG = {
           // Ads d'acheter davantage de trafic locataire. Evenement distinct, non converti.
           dataLayer.push(isLocPath
             ? { event: "dossier_locataire_envoye", lead_statut: answers.statut || "" }
-            : { event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "", lead_revenus: answers.revenus || "" });
+            : { event: "form_submit_success", lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "" });
         }
         else { setStatus("⚠️ Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })
