@@ -346,9 +346,11 @@ var CONFIG = {
     var v = parseInt(this.value, 10);
     if (v < 20 || v > 250) {
       this.setCustomValidity("La surface doit être comprise entre 20 et 250 m².");
+      this.setAttribute("aria-invalid", "true");
       if (surfErr) surfErr.textContent = "La surface doit être comprise entre 20 et 250 m².";
     } else {
       this.setCustomValidity("");
+      this.removeAttribute("aria-invalid");
       if (surfErr) surfErr.textContent = "";
     }
   });
