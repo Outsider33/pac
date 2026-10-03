@@ -122,9 +122,9 @@ var CONFIG = {
     var term = (urlParams.get("utm_term") || "").toLowerCase();
     var combined = camp + " " + term;
     if (combined.indexOf("fioul") !== -1) {
-      heroSub.textContent = "Remplacez votre chaudière fioul. Aides cumulées jusqu'à 10 800 € selon profil.";
+      heroSub.textContent = "Remplacez votre chaudière fioul. Aides MaPrimeRénov' et CEE déduites de votre devis.";
     } else if (combined.indexOf("gaz") !== -1) {
-      heroSub.textContent = "Remplacez votre chaudière gaz. Aides cumulées jusqu'à 10 800 € selon profil.";
+      heroSub.textContent = "Remplacez votre chaudière gaz. Aides MaPrimeRénov' et CEE déduites de votre devis.";
     } else if (combined.indexOf("aide") !== -1 || combined.indexOf("prime") !== -1) {
       heroSub.textContent = "Vérifiez les aides et votre reste à charge.";
     }
@@ -180,7 +180,7 @@ var CONFIG = {
             chaufItem.innerHTML = "🔥 <b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
         }
         
-        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : "Aides pouvant atteindre 10 800 €, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
+        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
         $("#rwdAidesTxt").textContent = aideTxt;
         $("#rwdAides").style.display = "list-item";
       }
