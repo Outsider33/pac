@@ -392,3 +392,17 @@ legend.q{padding:0;outline:0}
 
 #garanties{background:var(--bg-sunken)}
 
+
+/* ===================== FRANCE RÉNOV' — mention légale =====================
+   Arrêté du 7 juillet 2026 (art. L. 122-26 c. conso.), en vigueur au 1er octobre 2026 :
+   message de l'annexe I mot pour mot, distinct de la publicité (art. 2), lien de redirection
+   vers france-renov.gouv.fr/servicepublic (art. 6). Couleurs neutres, volontairement hors de
+   la palette du site, pour qu'il ne se confonde pas avec le message commercial. */
+.frenov{background:#fff;border-top:1px solid var(--border-strong);border-bottom:1px solid var(--border-strong)}
+.frenov a{display:flex;align-items:center;gap:var(--s4);max-width:var(--maxw);margin:0 auto;padding:var(--s4) var(--s5);color:#1b1b35;text-decoration:none}
+.frenov-k{flex:none;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#000091;border:1px solid #000091;border-radius:2px;padding:2px 8px}
+.frenov-t{font-size:14px;line-height:1.5}
+.frenov-t u{text-underline-offset:3px}
+.frenov a:hover .frenov-t u,.frenov a:focus-visible .frenov-t u{text-decoration-thickness:2px}
+.frenov a:focus-visible{outline:2px solid #000091;outline-offset:-4px}
+@media (max-width:40em){.frenov a{flex-direction:column;align-items:flex-start;gap:var(--s2)}}
