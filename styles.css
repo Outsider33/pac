@@ -393,16 +393,25 @@ legend.q{padding:0;outline:0}
 #garanties{background:var(--bg-sunken)}
 
 
-/* ===================== FRANCE RÉNOV' — mention légale =====================
-   Arrêté du 7 juillet 2026 (art. L. 122-26 c. conso.), en vigueur au 1er octobre 2026 :
-   message de l'annexe I mot pour mot, distinct de la publicité (art. 2), lien de redirection
-   vers france-renov.gouv.fr/servicepublic (art. 6). Couleurs neutres, volontairement hors de
-   la palette du site, pour qu'il ne se confonde pas avec le message commercial. */
-.frenov{background:#fff;border-top:1px solid var(--border-strong);border-bottom:1px solid var(--border-strong)}
-.frenov a{display:flex;align-items:center;gap:var(--s4);max-width:var(--maxw);margin:0 auto;padding:var(--s4) var(--s5);color:#1b1b35;text-decoration:none}
-.frenov-k{flex:none;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#000091;border:1px solid #000091;border-radius:2px;padding:2px 8px}
-.frenov-t{font-size:14px;line-height:1.5}
-.frenov-t u{text-underline-offset:3px}
-.frenov a:hover .frenov-t u,.frenov a:focus-visible .frenov-t u{text-decoration-thickness:2px}
-.frenov a:focus-visible{outline:2px solid #000091;outline-offset:-4px}
-@media (max-width:40em){.frenov a{flex-direction:column;align-items:flex-start;gap:var(--s2)}}
+/* ===================== FRANCE RÉNOV' — encart obligatoire =====================
+   Arrêté du 7 juillet 2026 (art. L. 122-26 c. conso.) et charte France Rénov' 2026, p. 25 :
+   encart cliquable vers france-renov.gouv.fr/servicepublic, en haut de chaque page qui parle de
+   travaux, 150 px de haut minimum, pleine largeur sur mobile. Sur ordinateur : la bannière PNG
+   officielle du kit, inchangée. Sur mobile : la version HTML que la charte autorise, mêmes logos
+   (recadrés du PNG officiel), Marianne, sauts de ligne de la version 5 lignes (charte p. 9). */
+@font-face{font-family:"Marianne";src:url("fonts/Marianne-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Marianne";src:url("fonts/Marianne-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+.frenov{background:#fff;padding:var(--s5) var(--s4);border-bottom:1px solid var(--border)}
+.frenov a{display:block;max-width:700px;margin:0 auto;color:#000;text-decoration:none}
+.frenov-desk{display:block;width:700px;height:150px;max-width:none}
+.frenov-mob{display:none}
+/* pages secondaires : l'en-tête est fixe, l'encart ne doit jamais passer dessous (arrêté, art. 2) */
+main>.frenov:first-child{padding-top:calc(76px + var(--s5))}
+.frenov a:focus-visible{outline:3px solid #000091;outline-offset:4px}
+@media (max-width:46em){
+  .frenov{padding:var(--s4) 0}
+  .frenov-desk{display:none}
+  .frenov-mob{display:flex;flex-direction:column;align-items:center;gap:12px;border:3px solid #000;padding:14px 16px 16px;min-height:150px;font-family:"Marianne",Arial,sans-serif;font-size:17px;line-height:1.35;text-align:center}
+  .frenov-mob img{width:220px;height:auto}
+  .frenov-mob b{font-weight:700}
+}
