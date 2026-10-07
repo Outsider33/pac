@@ -180,7 +180,7 @@ var CONFIG = {
             chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-500);margin-right:.5rem;\">01</span><b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
         }
         
-        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
+        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : (answers.statut === "Locataire") ? "Les aides sont versées au propriétaire : votre conseiller vous explique comment monter le projet avec lui." : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
         $("#rwdAidesTxt").textContent = aideTxt;
         $("#rwdAides").style.display = "list-item";
       }
@@ -194,14 +194,7 @@ var CONFIG = {
     }
   }
 
-  function showLocataireMsg() {
-    steps.forEach(function (id) { var el = document.getElementById(id); if(el) el.hidden = true; });
-    var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
-    var loc = document.getElementById("qLocataireMsg");
-    if(loc) { loc.hidden = false; try { loc.focus({ preventScroll: true }); } catch (e) {} }
-  }
-
-  function showHorsCible(msg) {
+  function showHorsCible(msg, reason) {
     steps.forEach(function (id) { var el = document.getElementById(id); if(el) el.hidden = true; });
     var top = document.querySelector(".qual-top"); if(top) top.hidden = true;
     var out = document.getElementById("qHorsCible"); 
@@ -211,7 +204,7 @@ var CONFIG = {
       out.hidden = false; 
       try { out.focus({ preventScroll: true }); } catch (e) {} 
     }
-    dataLayer.push({ event: "lead_hors_cible", reason: answers.logement || answers.statut || answers.chauffage });
+    dataLayer.push({ event: "lead_hors_cible", reason: reason || answers.logement || answers.statut || answers.chauffage });
   }
 
   function showSsc() {
@@ -222,14 +215,6 @@ var CONFIG = {
   }
 
   
-  var btnContinueLocataire = document.getElementById("btnContinueLocataire");
-  if(btnContinueLocataire) {
-    btnContinueLocataire.addEventListener("click", function() {
-      var loc = document.getElementById("qLocataireMsg"); if(loc) loc.hidden = true;
-      var locForm = document.getElementById("qLocataireForm"); if(locForm) locForm.hidden = false;
-      var first = locForm.querySelector("input"); if(first) setTimeout(function(){try{first.focus();}catch(e){}}, 240);
-    });
-  }
 
   var btnContinueSsc = document.getElementById("btnContinueSsc");
   if(btnContinueSsc) {
@@ -250,19 +235,6 @@ var CONFIG = {
         ssc.hidden = true;
         var top = document.querySelector(".qual-top"); if(top) top.hidden = false;
         show(1, true);
-        return;
-      }
-      var locMsg = b.closest("#qLocataireMsg");
-      if (locMsg) {
-        locMsg.hidden = true;
-        var top = document.querySelector(".qual-top"); if(top) top.hidden = false;
-        show(0, true);
-        return;
-      }
-      var locForm = b.closest("#qLocataireForm");
-      if (locForm) {
-        locForm.hidden = true;
-        showLocataireMsg();
         return;
       }
       show(Math.max(0, cur - 1), true); 
@@ -291,18 +263,16 @@ var CONFIG = {
       answers[r.name] = r.value;
       
       if (r.name === "statut") {
-        if (answers.statut === "Locataire") {
-          setTimeout(function() { showLocataireMsg(); }, 240);
-        } else {
-          setTimeout(function () { show(1, true); }, 240);
-        }
+        // 07/10 : un locataire suit la même fiche que le propriétaire (demande de Madina : il faut tous les avoir au téléphone)
+        setTimeout(function () { show(1, true); }, 240);
       }
 
       if (r.name === "chauffage") {
         if (answers.chauffage === "Autre") {
-          setTimeout(function() { showHorsCible("Malheureusement, au vu de vos réponses, vous ne remplissez pas les conditions d'éligibilité pour cette aide."); }, 240);
+          setTimeout(function() { showHorsCible("Malheureusement, au vu de vos réponses, vous ne remplissez pas les conditions d'éligibilité pour cette aide.", "chauffage_autre"); }, 240);
         } else if (answers.chauffage === "Électrique") {
-          setTimeout(showSsc, 240);
+          // 07/10 : hors cible pour le moment. Pour revenir au Système Solaire Combiné : setTimeout(showSsc, 240);
+          setTimeout(function() { showHorsCible("Pour le moment, nous ne traitons pas les logements chauffés à l'électricité.", "chauffage_electrique"); }, 240);
         } else {
           setTimeout(function () { show(2, true); }, 240);
         }
@@ -310,7 +280,7 @@ var CONFIG = {
 
       if (r.name === "logement") {
         if (answers.logement === "Appartement") {
-          setTimeout(function() { showHorsCible("La pompe à chaleur air/eau nécessite l'installation d'une unité extérieure encombrante et est très rarement compatible ou autorisée en appartement."); }, 240);
+          setTimeout(function() { showHorsCible("La pompe à chaleur air/eau nécessite l'installation d'une unité extérieure encombrante et est très rarement compatible ou autorisée en appartement.", "appartement"); }, 240);
         } else {
           setTimeout(function () { show(3, true); }, 240);
         }
@@ -326,16 +296,12 @@ var CONFIG = {
       var v = b.getAttribute("data-qs");
       var radio = form.querySelector('input[name="statut"][value="' + v + '"]');
       if (radio) { radio.checked = true; answers.statut = v; }
-      ["qLocataireMsg", "qLocataireForm", "qSsc", "qHorsCible"].forEach(function (id) { var el = document.getElementById(id); if (el) el.hidden = true; });
+      ["qSsc", "qHorsCible"].forEach(function (id) { var el = document.getElementById(id); if (el) el.hidden = true; });
       var top = document.querySelector(".qual-top"); if (top) top.hidden = false;
-      if (v === "Locataire") {
-        showLocataireMsg();
-      } else {
-        show(1, false);
-      }
+      show(1, false);
       if (formSec) formSec.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
       var legend = $("#qStep2 legend");
-      if (legend && v !== "Locataire") setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 600);
+      if (legend) setTimeout(function () { try { legend.focus({ preventScroll: true }); } catch (e) {} }, reduce ? 0 : 600);
     });
   });
 
@@ -356,33 +322,6 @@ var CONFIG = {
       if (surfErr) surfErr.textContent = "";
     }
   });
-
-  /* ---- choix du canal : offre dure (rappel) ou offre douce (email seul) ----
-     Bly, ch. 3 : un entonnoir à offre unique perd la majorite des repondants.
-     L'offre douce sort aussi du champ de l'interdiction du démarchage téléphonique,
-     qui ne vise que la voie téléphonique (L. 223-1, 5e alinea). */
-  function canalChoisi() {
-    var r = form.querySelector('input[name="canal"]:checked');
-    return r ? r.value : "telephone";
-  }
-  function appliquerCanal() {
-    var parEmail = canalChoisi() === "email";
-    var fldTel = $("#fldTel"), fldCreneau = $("#fldCreneau"),
-        champTel = $("#tel"), champEmail = $("#fEmail"),
-        hint = $("#hintEmail"), txt = $("#consentTxt"), hid = $("#fCanal");
-
-    if (fldTel) fldTel.hidden = parEmail;
-    if (fldCreneau) fldCreneau.hidden = parEmail;
-    if (champTel) { champTel.required = !parEmail; if (parEmail) champTel.setAttribute("aria-invalid", "false"); }
-    if (champEmail) champEmail.required = parEmail;
-    if (hint) hint.textContent = parEmail ? "(obligatoire — c'est là que part votre estimation)" : "(facultatif, pour l'envoi du récapitulatif)";
-    if (hid) hid.value = parEmail ? "email" : "telephone";
-    if (txt) txt.innerHTML = parEmail
-      ? "<strong>Je demande à recevoir par email</strong> mon estimation et le guide des aides, au sujet de mon projet de pompe à chaleur ou de système solaire combiné. Aucun appel."
-      : "<strong>Je demande à être rappelé</strong> au sujet de mon projet de pompe à chaleur ou de système solaire combiné. Un seul appel, sous 24 h ouvrées, aucun démarchage.";
-  }
-  $$('input[name="canal"]').forEach(function (r) { r.addEventListener("change", appliquerCanal); });
-  appliquerCanal();
 
   /* ---- masque téléphone +33 ---- */
   var tel = $("#tel");
@@ -438,14 +377,16 @@ var CONFIG = {
   }
 
   /* ---- submit ---- */
+  // 07/10 (demande de Madina) : un seul parcours, par téléphone, pour tous les statuts.
+  // L'offre « email seulement » et le dossier locataire envoyé par email sont retirés.
   var isSubmitting = false;
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (isSubmitting) return;
 
     if (form.action.indexOf("__FORMSPREE_ID__") !== -1) { setStatus("Configurez Formspree (remplacez __FORMSPREE_ID__).", true); return; }
-    
-    var visibleFieldset = document.querySelector(".qstep:not([hidden]), .qsuccess:not([hidden])#qLocataireForm");
+
+    var visibleFieldset = document.querySelector(".qstep:not([hidden])");
     var fields = visibleFieldset ? $$("input[required], select[required]", visibleFieldset) : [];
     for (var i = 0; i < fields.length; i++) {
       if (!fields[i].checkValidity()) {
@@ -455,105 +396,75 @@ var CONFIG = {
         return;
       }
     }
-    var parEmail = canalChoisi() === "email";
-    var telVisible = tel && !tel.closest("fieldset").hidden && !parEmail;
-    if (telVisible && !/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
-    
-    var locForm = document.getElementById("qLocataireForm");
-    var isLocPath = !!(locForm && !locForm.hidden);
+    if (!/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
+
     var btn = $(".qsubmit", visibleFieldset || form); var orig = btn ? btn.textContent : "";
     if (btn) { btn.disabled = true; btn.textContent = "Envoi…"; }
     isSubmitting = true;
 
     // Normalisation téléphone en format E.164
     var rawTel = tel.value.replace(/\D/g, "");
-    if(rawTel.startsWith("0")) rawTel = rawTel.slice(1);
-    var telE164 = "+33" + rawTel;
+    if (rawTel.startsWith("0")) rawTel = rawTel.slice(1);
 
-    var fd = new FormData(form); 
-    if (telVisible) { fd.set("telephone", telE164); }
-    if (!telVisible) { fd.delete("telephone"); }
-    // Un seul parcours par lead : on retire les champs (vides) de l'autre parcours
-    (isLocPath ? ["nom_prenom", "email", "adresse", "surface", "creneau"] : ["nom_prenom_locataire", "email_locataire"]).forEach(function (k) { fd.delete(k); });
+    var fd = new FormData(form);
+    fd.set("telephone", "+33" + rawTel);
 
     // Art. R223-4 c. consommation : horodater la demande du consommateur.
     // C'est la justification de « la réalité de la demande d'information », à archiver 3 ans.
-    var nowIso = new Date().toISOString();
-    if (isLocPath) {
-      fd.set("demande_horodatage_locataire", nowIso);
-      fd.delete("demande_horodatage"); fd.delete("demande_objet");
-    } else {
-      fd.set("demande_horodatage", nowIso);
-      if (parEmail) { fd.delete("creneau"); }
-      fd.set("demande_objet", parEmail
-        ? "Estimation et guide demandés par email par le consommateur — aucun appel — projet de pompe à chaleur air/eau ou de système solaire combiné"
-        : "Rappel demandé par le consommateur — projet de pompe à chaleur air/eau ou de système solaire combiné (art. R223-4 du code de la consommation)");
-      fd.delete("demande_horodatage_locataire"); fd.delete("demande_objet_locataire");
-    }
+    fd.set("demande_horodatage", new Date().toISOString());
 
     fetch(form.action, { method: "POST", body: fd, headers: { Accept: "application/json" } })
       .then(function (r) {
         if (r.ok) {
           steps.forEach(function (id) { $("#" + id).hidden = true; });
-          if (locForm) locForm.hidden = true;
           $(".qual-top", form).hidden = true;
-          var ok = $(isLocPath ? "#qLocataireSuccess" : "#qSuccess"); ok.hidden = false;
-          if (!isLocPath) {
-            var sucMain = $("#sucMain"), sucTel = $("#sucTel"), sucGuide = $("#sucGuide"), ics = $("#btnIcs");
-            if (sucTel) sucTel.hidden = parEmail;
-            if (ics) ics.hidden = parEmail;
-            if (sucGuide) sucGuide.hidden = !parEmail;
-            if (sucMain) sucMain.innerHTML = parEmail
-              ? "Votre estimation et le guide des aides partent <strong>par email</strong>. Pensez à regarder vos courriers indésirables. <strong>Personne ne vous appellera.</strong>"
-              : "Un conseiller vous rappelle <strong>sous 24 heures ouvrées</strong> avec votre estimation. Un seul appel, sans démarchage.";
-          }
+          var ok = $("#qSuccess"); ok.hidden = false;
           try { ok.focus({ preventScroll: true }); } catch (e2) {}
-          
-          // Un dossier locataire n'est PAS un lead : il ne peut pas aboutir sans l'accord
-          // du proprietaire. L'envoyer comme form_submit_success ferait apprendre a Google
-          // Ads d'acheter davantage de trafic locataire. Evenement distinct, non converti.
-          // L'offre douce est un lead reel mais d'intention plus faible, et sans telephone
-          // elle ne se traite pas de la meme maniere. Evenement distinct pour qu'elle puisse
-          // etre suivie sans etre, au depart, la conversion que Google Ads optimise.
-          dataLayer.push(isLocPath
-            ? { event: "dossier_locataire_envoye", lead_statut: answers.statut || "" }
-            : { event: parEmail ? "estimation_email_demandee" : "form_submit_success",
-                lead_canal: parEmail ? "email" : "telephone",
-                lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "" });
+
+          // Un locataire ne peut pas engager les travaux sans son propriétaire : c'est un vrai
+          // contact à rappeler, mais pas la conversion que Google Ads doit apprendre à acheter.
+          // Événement distinct, pour pouvoir le suivre sans qu'il pilote les enchères.
+          var locataire = answers.statut === "Locataire";
+          dataLayer.push({ event: locataire ? "lead_locataire" : "form_submit_success",
+            lead_canal: "telephone",
+            lead_statut: answers.statut || "", lead_chauffage: answers.chauffage || "", lead_logement: answers.logement || "" });
         }
         else { setStatus("Une erreur est survenue. Réessayez ou appelez-nous.", true); }
       })
       .catch(function () { setStatus("Connexion impossible. Appelez-nous directement.", true); })
-      .finally(function () { 
-        isSubmitting = false; 
-        if (btn) { btn.disabled = false; btn.textContent = orig; } 
+      .finally(function () {
+        isSubmitting = false;
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
       });
   });
 
   /* ---- Générateur ICS ---- */
+  // 07/10 : l'événement d'agenda reprend le créneau choisi ; sans préférence, 9 h le jour ouvré suivant.
   var btnIcs = $("#btnIcs");
-  if(btnIcs) {
-    btnIcs.addEventListener("click", function(e) {
-      // 9h prochain jour ouvré
+  if (btnIcs) {
+    btnIcs.addEventListener("click", function () {
       var d = new Date();
       d.setDate(d.getDate() + 1);
       // Sauter samedi/dimanche
-      if (d.getDay() === 6) d.setDate(d.getDate() + 2); // Si samedi -> Lundi
-      else if (d.getDay() === 0) d.setDate(d.getDate() + 1); // Si dimanche -> Lundi
-      
-      d.setHours(9, 0, 0, 0); // 9h00 locale
-      var end = new Date(d.getTime() + 30*60000); // +30 min
-      
+      if (d.getDay() === 6) d.setDate(d.getDate() + 2); // Si samedi -> lundi
+      else if (d.getDay() === 0) d.setDate(d.getDate() + 1); // Si dimanche -> lundi
+
+      var sel = $("#fCreneau");
+      var m = sel ? /^(\d{1,2})\D+(\d{1,2})/.exec(sel.value) : null;
+      var debut = m ? +m[1] : 9, fin = m ? +m[2] : null;
+      d.setHours(debut, 0, 0, 0); // heure locale
+      var end = fin ? new Date(d.getTime() + (fin - debut) * 3600000) : new Date(d.getTime() + 30 * 60000);
+
       // format YYYYMMDDTHHMMSSZ (en UTC)
       function fmt(dt) { return dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z"; }
-      
+
       var ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//PAC 1 EURO//NONSGML v1.0//EN\nBEGIN:VEVENT\n";
       ics += "UID:" + Date.now() + "@pac-1euro.com\n";
       ics += "DTSTAMP:" + fmt(new Date()) + "\n";
       ics += "DTSTART:" + fmt(d) + "\n";
       ics += "DTEND:" + fmt(end) + "\n";
       ics += "SUMMARY:Appel d'estimation PAC à 1 €\n";
-      ics += "DESCRIPTION:Un conseiller vous rappelle depuis le 07 80 94 82 05 pour votre estimation.\n";
+      ics += "DESCRIPTION:Un conseiller vous rappelle depuis le 07 80 94 82 05 pour votre estimation" + (fin ? ", entre " + debut + " h et " + fin + " h" : "") + ".\n";
       ics += "END:VEVENT\nEND:VCALENDAR";
 
       var blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });

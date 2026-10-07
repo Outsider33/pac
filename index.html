@@ -310,16 +310,12 @@
         </div>
 
         <legend class="q" tabindex="-1" style="font-size:1.1rem;">Vos coordonnées pour l'étude</legend>
-        <div class="opts" id="qCanal" role="radiogroup" aria-label="Comment souhaitez-vous recevoir votre estimation">
-          <label class="opt"><input type="radio" name="canal" value="telephone" checked><span class="ot">Par <strong>téléphone</strong> — un conseiller vous rappelle une seule fois, sous 24 h ouvrées</span></label>
-          <label class="opt"><input type="radio" name="canal" value="email"><span class="ot">Par <strong>email seulement</strong> — votre estimation et le guide des aides, aucun appel</span></label>
-        </div>
         
         <div class="field ban"><label for="ban">Code postal / commune *</label><input type="text" id="ban" name="adresse" autocomplete="off" placeholder="ex. 33000 Bordeaux" role="combobox" aria-expanded="false" aria-controls="banList" aria-autocomplete="list" required><div class="ban-list" id="banList" role="listbox" aria-label="Suggestions d'adresses" hidden></div></div>
         <div class="field"><label for="fNom">Nom et prénom *</label><input type="text" id="fNom" name="nom_prenom" autocomplete="name" required></div>
         <div class="field" id="fldEmail"><label for="fEmail">Email <span class="opt-hint" id="hintEmail">(facultatif, pour l'envoi du récapitulatif)</span></label><input type="email" id="fEmail" name="email" autocomplete="email"></div>
         <div class="field" id="fldTel"><label for="tel">Téléphone *</label><div class="tel-wrap"><span class="pfx">+33</span><input type="tel" id="tel" name="telephone" inputmode="tel" autocomplete="tel-national" maxlength="14" required></div></div>
-        <div class="field" id="fldCreneau"><label for="fCreneau">Heure de rappel idéale</label><select id="fCreneau" name="creneau"><option>Pas de préférence</option><option>8 h - 12 h</option><option>12 h - 14 h</option><option>14 h - 18 h</option><option>18 h - 20 h</option></select></div>
+        <div class="field" id="fldCreneau"><label for="fCreneau">Heure de rappel idéale</label><select id="fCreneau" name="creneau"><option>Pas de préférence</option><option>9 h - 12 h</option><option>12 h - 14 h</option><option>14 h - 16 h</option><option>16 h - 18 h</option></select></div>
         
         <label class="consent"><input type="checkbox" name="consentement" value="oui" required> <span id="consentTxt"><strong>Je demande à être rappelé</strong> au sujet de mon projet de pompe à chaleur ou de système solaire combiné. Un seul appel, sous 24 h ouvrées, aucun démarchage.</span></label>
         <input type="hidden" name="canal_demande" id="fCanal" value="telephone">
@@ -328,34 +324,6 @@
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
         <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="submit" class="btn btn-primary qsubmit" id="btnSubmit">Voir mon estimation</button></div>
       </fieldset>
-
-      <!-- locataire screen (intermediate) -->
-      <div class="qsuccess" id="qLocataireMsg" hidden tabindex="-1">
-        <span class="eyebrow">Information Locataire</span>
-        <h3>Les aides sont versées à votre propriétaire, <span class="it">pas directement à vous.</span></h3>
-        <p>Si vous êtes motivé, on peut vous envoyer un dossier à lui transmettre.</p>
-        <div class="qact" style="margin-top:2rem;flex-direction:column;gap:1rem;"><button type="button" class="btn btn-primary" id="btnContinueLocataire">Continuer quand même</button><button type="button" class="btn btn-secondary" data-back>Retour</button></div>
-      </div>
-
-      <!-- locataire contact form -->
-      <fieldset class="qstep" id="qLocataireForm" data-step="locataire" hidden>
-        <legend class="q" tabindex="-1">Où pouvons-nous envoyer le dossier pour votre propriétaire ?</legend>
-        <div class="field"><label for="lNom">Nom et prénom *</label><input type="text" id="lNom" name="nom_prenom_locataire" autocomplete="name" required></div>
-        <div class="field"><label for="lEmail">Email *</label><input type="email" id="lEmail" name="email_locataire" autocomplete="email" required></div>
-        <label class="consent"><input type="checkbox" name="consentement_dossier" value="oui" required> <strong>Je demande à recevoir</strong> par email le dossier à transmettre à mon propriétaire. Aucun appel, aucun démarchage.</label>
-        <input type="hidden" name="demande_objet_locataire" value="Dossier demandé par le consommateur — envoi par email uniquement, aucun appel">
-        <input type="hidden" name="demande_horodatage_locataire" id="fHorodatageLoc" value="">
-        <div class="qact"><button type="button" class="btn btn-secondary" data-back>Retour</button><button type="submit" class="btn btn-primary qsubmit">Recevoir le dossier</button></div>
-      </fieldset>
-
-      <!-- success locataire (dossier) -->
-      <div class="qsuccess" id="qLocataireSuccess" hidden tabindex="-1">
-        <img src="assets/seal.svg" alt="" width="84" height="84">
-        <span class="eyebrow">Demande de dossier envoyée</span>
-        <h3>Votre dossier est <span class="it">en route.</span></h3>
-        <p>Vous allez recevoir par email le dossier à transmettre à votre propriétaire. Pensez à vérifier vos courriers indésirables.</p>
-        <a class="btn btn-secondary" href="tel:+33780948205">Une question ? · 07 80 94 82 05</a>
-      </div>
 
       <!-- success -->
         <div class="qsuccess" id="qSuccess" hidden tabindex="-1">
@@ -370,7 +338,7 @@
           <a class="btn btn-secondary" href="tel:+33780948205">Une question ? · 07 80 94 82 05</a>
         </div>
 
-        <!-- ssc screen (intermediate) -->
+        <!-- ssc screen (intermediate) : inutilisé depuis le 07/10, électrique hors cible pour le moment. Réactivation : script.js, étape chauffage -->
         <div class="qsuccess" id="qSsc" hidden tabindex="-1">
           <span class="eyebrow">Alternative Électrique</span>
           <h3>Le Solaire Combiné <span class="it">pourrait vous convenir.</span></h3>
