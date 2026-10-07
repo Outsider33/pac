@@ -269,6 +269,7 @@
         <div class="opts">
           <label class="opt"><input type="radio" name="chauffage" value="Fioul" required><span class="ot">Fioul</span></label>
           <label class="opt"><input type="radio" name="chauffage" value="Gaz" required><span class="ot">Gaz</span></label>
+          <label class="opt"><input type="radio" name="chauffage" value="Électrique" required><span class="ot">Électrique</span></label>
           <label class="opt"><input type="radio" name="chauffage" value="Autre" required><span class="ot">Autre</span></label>
         </div>
         <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button></div>
@@ -298,7 +299,7 @@
           <img src="assets/seal.svg" alt="" width="52" height="52" style="margin-bottom:0.5rem;">
           <h3 style="color:var(--sage-700);margin-bottom:1rem;font-size:1.25rem;">Votre profil semble compatible avec les aides PAC</h3>
           <ul style="list-style:none;padding:0;text-align:left;font-size:0.9rem;margin-bottom:1rem;line-height:1.5;display:inline-block;">
-            <li><span class="mono" style="color:var(--ink-500);margin-right:.5rem;">01</span><b>Chaudière <span id="rwdChauf"></span></b> : prioritaire pour le remplacement</li>
+            <li id="rwdChaufItem"><span class="mono" style="color:var(--ink-500);margin-right:.5rem;">01</span><b>Chaudière <span id="rwdChauf"></span></b> : prioritaire pour le remplacement</li>
             <li id="rwdAides" style="display:none;color:var(--terra-700);"><span class="mono" style="color:var(--ink-500);margin-right:.5rem;">02</span><span id="rwdAidesTxt"></span></li>
           </ul>
           <p style="font-weight:600;">Dernière étape : recevez votre estimation au créneau de votre choix</p>
@@ -337,7 +338,7 @@
           <a class="btn btn-secondary" href="tel:+33780948205">Une question ? · 07 80 94 82 05</a>
         </div>
 
-        <!-- ssc screen (intermediate) : inutilisé depuis le 07/10, le chauffage électrique n'est plus proposé. Réactivation : remettre l'option Électrique (étape 2) et sa branche dans script.js -->
+        <!-- ssc screen (intermediate) : le chauffage électrique y mène (option remise le 07/10 au soir, l'installateur couvre toute la France) -->
         <div class="qsuccess" id="qSsc" hidden tabindex="-1">
           <span class="eyebrow">Alternative Électrique</span>
           <h3>Le Solaire Combiné <span class="it">pourrait vous convenir.</span></h3>

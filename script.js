@@ -173,7 +173,7 @@ var CONFIG = {
         $("#qReward").hidden = false;
         $("#qRewardFail").hidden = true;
         
-        var chaufItem = $("#rwdChauf").parentNode;
+        var chaufItem = $("#rwdChaufItem");
         if (answers.chauffage === "Électrique") {
             chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-500);margin-right:.5rem;\">01</span><b>Votre logement</b> : compatible avec un Système Solaire Combiné";
         } else {
@@ -270,6 +270,9 @@ var CONFIG = {
       if (r.name === "chauffage") {
         if (answers.chauffage === "Autre") {
           setTimeout(function() { showHorsCible("Malheureusement, au vu de vos réponses, vous ne remplissez pas les conditions d'éligibilité pour cette aide.", "chauffage_autre"); }, 240);
+        } else if (answers.chauffage === "Électrique") {
+          // 07/10 au soir : l'électrique revient, vers le Système Solaire Combiné
+          setTimeout(showSsc, 240);
         } else {
           setTimeout(function () { show(2, true); }, 240);
         }
