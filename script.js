@@ -270,9 +270,6 @@ var CONFIG = {
       if (r.name === "chauffage") {
         if (answers.chauffage === "Autre") {
           setTimeout(function() { showHorsCible("Malheureusement, au vu de vos réponses, vous ne remplissez pas les conditions d'éligibilité pour cette aide.", "chauffage_autre"); }, 240);
-        } else if (answers.chauffage === "Électrique") {
-          // 07/10 : hors cible pour le moment. Pour revenir au Système Solaire Combiné : setTimeout(showSsc, 240);
-          setTimeout(function() { showHorsCible("Pour le moment, nous ne traitons pas les logements chauffés à l'électricité.", "chauffage_electrique"); }, 240);
         } else {
           setTimeout(function () { show(2, true); }, 240);
         }
