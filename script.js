@@ -1,6 +1,6 @@
 
 var CONFIG = {
-  GTM_ID: "GTM-XXXXXXX" // À REMPLACER
+  GTM_ID: "GTM-K6MDKHMX"
 };
 
 (function () {
