@@ -328,7 +328,7 @@ var CONFIG = {
   var tel = $("#tel");
   if (tel) tel.addEventListener("input", function () {
     var d = tel.value.replace(/\D/g, "").replace(/^0/, "").slice(0, 9);
-    tel.value = (d.match(/.{1,2}/g) || []).join(" ").replace(/^(\d)\s/, "$1 ");
+    tel.value = d ? d.charAt(0) + (d.slice(1).match(/.{1,2}/g) || []).map(function (p) { return " " + p; }).join("") : "";
   });
 
   /* ---- BAN autocomplete ---- */
