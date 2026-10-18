@@ -184,7 +184,7 @@ var CONFIG = {
             chaufItem.innerHTML = "<span class=\"mono\" style=\"color:var(--ink-500);margin-right:.5rem;\">01</span><b>Chaudière " + answers.chauffage.toLowerCase() + "</b> : prioritaire pour le remplacement";
         }
         
-        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : (answers.statut === "Locataire") ? "Information Locataire : Les aides sont versées à votre propriétaire, pas directement à vous. Si vous êtes motivé, on peut vous envoyer un dossier à lui transmettre." : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
+        var aideTxt = (answers.statut === "Propriétaire bailleur") ? "Aides possibles, montant confirmé lors de l'étude" : (answers.statut === "Locataire") ? "Information Locataire : Les aides sont versées à votre propriétaire, pas directement à vous. Si vous êtes motivé, on peut vous envoyer un dossier à lui transmettre." : (answers.chauffage === "Électrique") ? "Prime CEE déduite de votre devis, montant confirmé lors de l'étude." : "Aides MaPrimeRénov' et CEE déduites de votre devis, et jusqu'à 0 € de reste à charge pour les foyers les plus modestes selon votre dossier.";
         $("#rwdAidesTxt").textContent = aideTxt;
         $("#rwdAides").style.display = "list-item";
       }
