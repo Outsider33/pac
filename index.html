@@ -321,6 +321,9 @@
         <input type="hidden" name="demande_objet" value="Rappel demandé par le consommateur — projet de pompe à chaleur air/eau ou de système solaire combiné (art. R223-4 du code de la consommation)">
         <input type="hidden" name="demande_horodatage" id="fHorodatage" value="">
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+        <!-- 27/10 : script.js écrit ses messages dans #qStatus (numéro invalide, erreur d'envoi, confirmation du numéro),
+             mais l'élément n'existait pas : aucun de ces messages ne s'affichait. -->
+        <p id="qStatus" role="status" aria-live="polite" style="font-size:.95rem;margin:.75rem 0 0;min-height:1.2em;"></p>
         <div class="qact"><button type="button" class="btn btn-secondary" data-back>Précédent</button><button type="submit" class="btn btn-primary qsubmit" id="btnSubmit">Voir mon estimation</button></div>
       </fieldset>
 

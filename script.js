@@ -399,6 +399,17 @@ var CONFIG = {
     }
     if (!/^[1-9](\s?\d){8}$/.test(tel.value)) { tel.closest(".field").classList.add("shake"); setTimeout(function () { tel.closest(".field").classList.remove("shake"); }, 400); setStatus("Numéro de téléphone invalide.", true); return; }
 
+    // 27/10 : le formulaire du 26/10 portait un numéro non attribué. Avant le premier envoi, on montre le
+    // numéro tel qu'il sera rappelé ; un second appui sur le bouton le confirme. Un numéro modifié redemande.
+    if (tel.dataset.confirme !== tel.value) {
+      tel.dataset.confirme = tel.value;
+      var telLu = ("0" + tel.value.replace(/\D/g, "").replace(/^0/, "")).replace(/(\d{2})(?=\d)/g, "$1 ");
+      setStatus("Nous vous rappellerons au " + telLu + ". Si c'est bien votre numéro, appuyez de nouveau sur « Voir mon estimation » ; sinon, corrigez-le.", false);
+      dataLayer.push({ event: "tel_confirmation_demandee" });
+      try { tel.focus(); } catch (e3) {}
+      return;
+    }
+
     var btn = $(".qsubmit", visibleFieldset || form); var orig = btn ? btn.textContent : "";
     if (btn) { btn.disabled = true; btn.textContent = "Envoi…"; }
     isSubmitting = true;
