@@ -55,12 +55,17 @@ var CONFIG = {
   // Après le consentement par défaut ET le choix déjà enregistré. Guide Consent Mode de Google :
   // « The order of the code here is vital. If your consent code is called out of order,
   // consent defaults won't work. »
+  // 27/10 : chargé à l'événement load, pour ne pas disputer la bande passante au titre sur mobile (150 Ko).
+  // L'ordre du consentement ne change pas : défauts et choix enregistré sont déjà dans dataLayer.
   if (CONFIG.GTM_ID && CONFIG.GTM_ID !== 'GTM-XXXXXXX') {
+    var loadGtm = function () {
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer',CONFIG.GTM_ID);
+    };
+    if (document.readyState === "complete") loadGtm(); else window.addEventListener("load", loadGtm);
   }
 
   if (btnAcc) btnAcc.addEventListener("click", function() { applyConsent(true, true); });
