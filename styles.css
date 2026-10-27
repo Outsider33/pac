@@ -111,7 +111,7 @@ nav.primary a:hover::after{transform:scaleX(1)}
    ========================================================================= */
 .hero{position:relative;min-height:88vh;min-height:88svh;display:flex;flex-direction:column;justify-content:flex-end;
   overflow:hidden;background:var(--forest-900);color:var(--ivory-50);padding:0;border:0}
-.hero::before{content:"";position:absolute;inset:0;background:url('assets/hero-pac-hd.jpg') center 40%/cover no-repeat;transform:scale(1.06);animation:ken 28s ease-out forwards}
+.hero::before{content:"";position:absolute;inset:0;background:url('assets/hero-pac-hd.jpg') center 40%/cover no-repeat;background-image:image-set(url('assets/hero-pac-hd.webp') type('image/webp'),url('assets/hero-pac-hd.jpg') type('image/jpeg'));transform:scale(1.06);animation:ken 28s ease-out forwards}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,30,20,.52),rgba(14,30,20,0) 18%,rgba(14,30,20,0) 56%,rgba(14,30,20,.42) 100%),linear-gradient(90deg,rgba(14,30,20,.48),rgba(14,30,20,.04) 50%,transparent 70%)}
 @keyframes ken{from{transform:scale(1.12)}to{transform:scale(1)}}
 .hero .wrap{position:relative;z-index:2;width:100%;display:flex;align-items:flex-end;padding:clamp(104px,16vh,164px) var(--s5) 56px}
@@ -369,7 +369,7 @@ legend.q{padding:0;outline:0}
   .sol-grid{grid-template-columns:1fr}
   section{padding:60px 0}
   .hdr .btn-primary{display:none}
-  .hero::before{background-image:url('assets/hero-pac-hd-900.jpg');background-position:72% 38%}
+  .hero::before{background-image:url('assets/hero-pac-hd-900.jpg');background-image:image-set(url('assets/hero-pac-hd-900.webp') type('image/webp'),url('assets/hero-pac-hd-900.jpg') type('image/jpeg'));background-position:72% 38%}
   .cartouche{max-width:100%;padding:24px 22px}
   .opts{grid-template-columns:1fr} .grid2{grid-template-columns:1fr} .mech{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
