@@ -55,7 +55,7 @@ var CONFIG = {
   // Après le consentement par défaut ET le choix déjà enregistré. Guide Consent Mode de Google :
   // « The order of the code here is vital. If your consent code is called out of order,
   // consent defaults won't work. »
-  // 27/10 : chargé à l'événement load, pour ne pas disputer la bande passante au titre sur mobile (150 Ko).
+  // 27/10 : chargé après l'affichage, pour ne pas disputer la bande passante au titre sur mobile (150 Ko).
   // L'ordre du consentement ne change pas : défauts et choix enregistré sont déjà dans dataLayer.
   if (CONFIG.GTM_ID && CONFIG.GTM_ID !== 'GTM-XXXXXXX') {
     var loadGtm = function () {
@@ -65,7 +65,15 @@ var CONFIG = {
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer',CONFIG.GTM_ID);
     };
-    if (document.readyState === "complete") loadGtm(); else window.addEventListener("load", loadGtm);
+    // 27/10 au soir : 3 s après load, ou au premier geste du visiteur. PageSpeed comptait les ~150 Ko de Google
+    // dans le temps du titre. Les événements du formulaire attendent dans dataLayer et partent à l'arrivée.
+    var gtmStarted = false;
+    var startGtm = function () { if (gtmStarted) return; gtmStarted = true; loadGtm(); };
+    var armGtm = function () {
+      setTimeout(startGtm, 3000);
+      ["pointerdown", "keydown", "touchstart", "scroll"].forEach(function (ev) { window.addEventListener(ev, startGtm, { once: true, passive: true }); });
+    };
+    if (document.readyState === "complete") armGtm(); else window.addEventListener("load", armGtm);
   }
 
   if (btnAcc) btnAcc.addEventListener("click", function() { applyConsent(true, true); });
