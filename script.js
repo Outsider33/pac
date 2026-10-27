@@ -409,7 +409,7 @@ var CONFIG = {
     if (tel.dataset.confirme !== tel.value) {
       tel.dataset.confirme = tel.value;
       var telLu = ("0" + tel.value.replace(/\D/g, "").replace(/^0/, "")).replace(/(\d{2})(?=\d)/g, "$1 ");
-      setStatus("Nous vous rappellerons au " + telLu + ". Si c'est bien votre numéro, appuyez de nouveau sur « Voir mon estimation » ; sinon, corrigez-le.", false);
+      setStatus("Nous vous rappellerons au " + telLu + ". Si c'est bien votre numéro, appuyez de nouveau sur « Recevoir mon estimation » ; sinon, corrigez-le.", false);
       dataLayer.push({ event: "tel_confirmation_demandee" });
       try { tel.focus(); } catch (e3) {}
       return;
